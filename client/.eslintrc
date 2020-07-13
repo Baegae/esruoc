@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "../.eslintrc",
+    "plugin:react/recommended"
+  ],
+  "rules": {
+    "react/jsx-max-props-per-line": ["warn", { "maximum": 1 }],
+    "react/jsx-closing-bracket-location": ["warn", "tag-aligned"]
+  }
+}
