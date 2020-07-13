@@ -1,6 +1,8 @@
-import Head from 'next/head'
+import Head from 'next/head';
+import React from 'react';
+import { ReactNode } from 'react';
 
-export default function Home() {
+export default function Home(): ReactNode {
   return (
     <div className="container">
       <Head>
@@ -205,5 +207,5 @@ export default function Home() {
         }
       `}</style>
     </div>
-  )
+  );
 }
