@@ -1,6 +1,9 @@
 ---
 name: 백엔드 이슈
 about: 백엔드와 관련있는 이슈에요!
+title: ''
+labels: "\U0001F95E backend"
+assignees: ''
 
 ---
 

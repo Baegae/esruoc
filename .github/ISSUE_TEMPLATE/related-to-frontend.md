@@ -1,6 +1,9 @@
 ---
 name: 프론트엔드 이슈
 about: 프론트엔드와 관련있는 이슈에요!
+title: ''
+labels: "\U0001F4BB frontend"
+assignees: ''
 
 ---
 

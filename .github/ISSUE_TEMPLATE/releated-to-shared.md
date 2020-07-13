@@ -1,6 +1,9 @@
 ---
 name: 공통 모듈 이슈
 about: 공통 모듈과 관련있는 이슈에요!
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
