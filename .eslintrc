@@ -13,6 +13,7 @@
         "quotes": ["warn", "single"],
         "semi": "warn",
         "eol-last": ["warn", "always"],
-        "indent": ["warn", 2]
+        "indent": ["warn", 2],
+        "@typescript-eslint/explicit-module-boundary-types": "off"
     }
 }
