@@ -1,0 +1,13 @@
+{
+  "name": "lectus",
+  "version": "0.1",
+  "description": "Lectus (Lecture + Us!) Client / Server",
+  "main": "index.ts",
+  "repository": "git@github.com:Baegae/lectus.git",
+  "author": "Baegae Team",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "./*"
+  ]
+}

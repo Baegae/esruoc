@@ -1,0 +1,8 @@
+{
+  "name": "lectus-client",
+  "version": "0.1",
+  "description": "Client for Lectus Project",
+  "main": "index.ts",
+  "author": "Baegae Team",
+  "license": "MIT"
+}
