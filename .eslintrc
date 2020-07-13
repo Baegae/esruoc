@@ -11,6 +11,9 @@
     ],
     "rules": {
         "quotes": ["warn", "single"],
-        "semi": "warn"
+        "semi": "warn",
+        "eol-last": ["warn", "always"],
+        "indent": ["warn", 2],
+        "@typescript-eslint/explicit-module-boundary-types": "off"
     }
 }
