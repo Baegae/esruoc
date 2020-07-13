@@ -1,13 +1,20 @@
 {
   "name": "lectus",
-  "version": "0.1",
+  "version": "0.1.0",
   "description": "Lectus (Lecture + Us!) Client / Server",
-  "main": "index.ts",
   "repository": "git@github.com:Baegae/lectus.git",
   "author": "Baegae Team",
   "license": "MIT",
   "private": true,
   "workspaces": [
     "*"
-  ]
+  ],
+  "dependencies": {
+    "eslint": "^7.4.0",
+    "typescript": "^3.9.6"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.6.0",
+    "@typescript-eslint/parser": "^3.6.0"
+  }
 }
