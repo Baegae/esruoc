@@ -12,6 +12,7 @@
     "rules": {
         "quotes": ["warn", "single"],
         "semi": "warn",
+        "eol-last": ["warn", "always"],
         "indent": ["warn", 2]
     }
 }
