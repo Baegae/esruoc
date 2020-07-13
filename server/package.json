@@ -18,6 +18,7 @@
     "typescript": "^3.9.6"
   },
   "scripts": {
-    "run": "tsc && node build/index.js"
+    "run": "tsc && node build/index.js",
+    "lint": "eslint **/*.ts"
   }
 }
