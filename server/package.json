@@ -1,8 +1,8 @@
 {
-  "name": "lectus-server",
-  "version": "0.1",
+  "name": "server",
+  "version": "0.1.0",
   "description": "Backend (Server) for Lectus Project",
-  "main": "index.js",
+  "main": "index.ts",
   "author": "Baegae Team",
   "license": "MIT"
 }

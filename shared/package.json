@@ -1,6 +1,6 @@
 {
-  "name": "lectus-shared",
-  "version": "0.1",
+  "name": "shared",
+  "version": "0.1.0",
   "description": "Shared Module for Lectus Project",
   "main": "index.ts",
   "author": "Baegae Team",
