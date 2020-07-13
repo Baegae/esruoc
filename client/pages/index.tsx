@@ -7,7 +7,9 @@ export default function Home(): ReactNode {
     <div className="container">
       <Head>
         <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon"
+          href="/favicon.ico"
+        />
       </Head>
 
       <main>
@@ -20,12 +22,16 @@ export default function Home(): ReactNode {
         </p>
 
         <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
+          <a href="https://nextjs.org/docs"
+            className="card"
+          >
             <h3>Documentation &rarr;</h3>
             <p>Find in-depth information about Next.js features and API.</p>
           </a>
 
-          <a href="https://nextjs.org/learn" className="card">
+          <a href="https://nextjs.org/learn"
+            className="card"
+          >
             <h3>Learn &rarr;</h3>
             <p>Learn about Next.js in an interactive course with quizzes!</p>
           </a>
@@ -57,7 +63,10 @@ export default function Home(): ReactNode {
           rel="noopener noreferrer"
         >
           Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
+          <img src="/vercel.svg"
+            alt="Vercel Logo"
+            className="logo"
+          />
         </a>
       </footer>
 
@@ -192,7 +201,9 @@ export default function Home(): ReactNode {
         }
       `}</style>
 
-      <style jsx global>{`
+      <style jsx
+        global
+      >{`
         html,
         body {
           padding: 0;
