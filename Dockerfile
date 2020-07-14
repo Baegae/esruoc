@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-COPY server /lectus
+COPY . /lectus
 WORKDIR /lectus
 
 RUN apt update && \
@@ -16,4 +16,6 @@ RUN apt update && \
     apt update && \
     apt install -y mongodb-org
 
-ENTRYPOINT ["run_dev.sh"]
+ENV PATH /lectus:$PATH
+
+ENTRYPOINT ["/lectus/run_dev.sh"]
