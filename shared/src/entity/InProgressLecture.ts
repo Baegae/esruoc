@@ -1,6 +1,8 @@
-export interface InProgressLecture {
+interface InProgressLecture {
     // 강의 ID
-    lectureId: string
+    lectureId: string;
     // 수강 완료한 차시 ID
-    completeLessonIds: [string]
+    completeLessonIds: [string];
 }
+
+export default InProgressLecture;
