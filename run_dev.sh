@@ -1,5 +1,7 @@
-systemctl start mongod
+#!/bin/bash
 
-cd /lectus/server
+mongod --fork --dbpath /srv/mongodb --logpath /var/log/mongodb.log
 
-node build/index.js
+cd /lectus
+
+yarn workspace server run run
