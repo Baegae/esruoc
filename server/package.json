@@ -15,10 +15,15 @@
   "devDependencies": {
     "class-transformer": "^0.2.3",
     "class-validator": "^0.12.2",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.6",
+    "link-module-alias": "^1.2.0"
   },
   "scripts": {
+    "postinstall": "link-module-alias",
     "run": "tsc && node build/index.js",
     "lint": "eslint **/*.ts"
+  },
+  "_moduleAliases": {
+    "@shared": "../shared/src"
   }
 }
