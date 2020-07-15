@@ -1,5 +1,5 @@
-# MOCY
-<b>M</b>ake <b>O</b>wn <b>C</b>ourse <b>Y</b>ourself.
+# EMOC
+<b>E</b>asy to <b>M</b>ake <b>O</b>wn <b>C</b>ourse
 
 <br>
 
