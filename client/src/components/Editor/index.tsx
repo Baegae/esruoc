@@ -46,7 +46,9 @@ const Editor: React.FC<EditorProps> = ({data, onChange}) => {
     if (!data) {
       return;
     }
-    editorRef.current?.render(data);
+    editorRef.current?.isReady.then(() => {
+      editorRef.current?.render(data);
+    });
   }, [data]);
 
   useEffect(() => {

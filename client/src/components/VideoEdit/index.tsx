@@ -19,6 +19,15 @@ const VideoEdit: React.FC /**
       console.log('ATOM', videoEdit);
     }, [videoEdit]);
 
+    const resetRecording = () => {
+      setVideoEdit((state) => ({
+        ...state,
+        changes: [],
+        viewingChangeIndex: -1,
+        videoObjectUrl: undefined,
+      }));
+    };
+
     const addTextChange = (textData: OutputData) => {
       setVideoEdit((videoEdit) => ({
         ...videoEdit,
@@ -35,6 +44,16 @@ const VideoEdit: React.FC /**
       setVideoEdit((videoEdit) => ({...videoEdit, videoObjectUrl: url}));
     };
 
+    const moveChangeIndex = (delta: number) => {
+      setVideoEdit((state) => {
+        const nextIndex = state.viewingChangeIndex + delta;
+        if (!(nextIndex >= -1 && nextIndex < state.changes.length)) {
+          return state;
+        }
+        return ({...state, viewingChangeIndex: state.viewingChangeIndex + delta});
+      });
+    };
+
     const videoRefCallback = getCameraMirrorRefCallback();
 
     useEffect(() => {
@@ -49,6 +68,7 @@ const VideoEdit: React.FC /**
         return;
       }
       setIsRecording(true);
+      resetRecording();
       recorder.startRecording();
     };
 
@@ -72,7 +92,10 @@ const VideoEdit: React.FC /**
 
     return <Scaffold>
       <EditorContainer>
-        <Editor onChange={handleTextDataChange}/>
+        <Editor
+          data={!videoEdit.isRecording ? (videoEdit.viewingChangeIndex >= 0 ? videoEdit.changes[videoEdit.viewingChangeIndex] : videoEdit.originalEditorData) : undefined}
+          onChange={handleTextDataChange}
+        />
       </EditorContainer>
       <VideoContainer>
         <CameraVideo
@@ -91,6 +114,9 @@ const VideoEdit: React.FC /**
           {!videoEdit.isRecording
             ? <button onClick={handleStartClick}>start recording</button>
             : <button onClick={handleStopClick}>stop recording</button>}
+          <button onClick={() => moveChangeIndex(1)}>+</button>
+          <span>{videoEdit.viewingChangeIndex}</span>
+          <button onClick={() => moveChangeIndex(-1)}>-</button>
         </div>
       </VideoContainer>
     </Scaffold>;
@@ -123,6 +149,7 @@ const EditorContainer = styled.div`
 interface State {
   originalEditorData: any;
   changes: any[];
+  viewingChangeIndex: number;
   isRecording: boolean;
   videoObjectUrl?: string;
 }
@@ -130,8 +157,13 @@ interface State {
 const videoEditState = atom<State>({
   key: 'videoEditState',
   default: {
-    originalEditorData: null,
+    originalEditorData: {
+      'time': 1595005520857,
+      'blocks': [{'type': 'paragraph', 'data': {'text': '안녕 하세요<br>'}}],
+      'version': '2.18.0'
+    },
     changes: [],
+    viewingChangeIndex: -1,
     isRecording: false,
     videoObjectUrl: undefined,
   },
