@@ -32,9 +32,6 @@ function EditorJSText() {
   const editorRef = useRef<EditorJS | null>(null);
   
   useEffect(() => {
-    const el = document.createElement('div');
-    el.id = 'editor';
-    document.getElementById('editorContainer')?.appendChild(el);
     editorRef.current = new EditorJS(Object.assign({}, editorJsConfig));
     // new EditorJS({...editorJsConfig, holder: 'editor9'});
   }, []);
@@ -55,22 +52,10 @@ function EditorJSText() {
   const handleLoad = () => {
     console.log('loading', text);
     editorRef.current?.render(JSON.parse(text));
-    // const el = document.getElementById('editorContainer');
-    // el?.firstChild?.remove();
-
-    // const editorEl = document.createElement('div');
-    // editorEl.id = 'editor9';
-    // document.getElementById('editorContainer')?.appendChild(editorEl);
-
-    // editorRef.current = new EditorJS({
-    //   ...Object.assign({}, editorJsConfig),
-    //   holder: 'editor9',
-    //   data: JSON.parse(text),
-    // });
   };
   
   return <div>
-    <div id="editorContainer">
+    <div id="editor">
     </div>
     <button onClick={handleLoad}>
       load
