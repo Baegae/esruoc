@@ -51,6 +51,7 @@ const Editor: React.FC<EditorProps> = ({data, onChange}) => {
     });
   }, [data]);
 
+  // TODO: MutationObserver로 효율성 개선하기
   useEffect(() => {
     const intervalId = setInterval(() => {
       editorRef.current?.save().then(data => {
