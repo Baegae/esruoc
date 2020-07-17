@@ -19,14 +19,23 @@ const VideoEdit: React.FC /**
       console.log('ATOM', videoEdit);
     }, [videoEdit]);
 
-    const videoRefCallback = useCallback<(el: HTMLVideoElement) => void>((el) => {
-      navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
-        if (el === null) {
-          return;
-        }
-        el.srcObject = stream;
-      });
-    }, []);
+    const addTextChange = (textData: OutputData) => {
+      setVideoEdit((videoEdit) => ({
+        ...videoEdit,
+        // originalEditorData,
+        changes: [...videoEdit.changes, textData]
+      }));
+    };
+
+    const setIsRecording = (isRecording: boolean) => {
+      setVideoEdit((videoEdit) => ({...videoEdit, isRecording}));
+    };
+
+    const setPreviewUrl = (url: string) => {
+      setVideoEdit((videoEdit) => ({...videoEdit, videoObjectUrl: url}));
+    };
+
+    const videoRefCallback = getCameraMirrorRefCallback();
 
     useEffect(() => {
       navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
@@ -39,18 +48,17 @@ const VideoEdit: React.FC /**
       if (videoEdit.isRecording) {
         return;
       }
-      setVideoEdit({...videoEdit, changes: [], isRecording: true});
+      setIsRecording(true);
       recorder.startRecording();
     };
+
     const handleStopClick = () => {
       recorder.stopRecording(() => {
-        const formData = new FormData();
-        setVideoEdit((videoEdit) => ({...videoEdit, videoObjectUrl: recorder.toURL()}));
-        formData.append('video', recorder.getBlob());
-        axios.post('http://10.10.20.230:3001/upload-video', formData).then(() => {
+        setPreviewUrl(recorder.toURL());
+        setIsRecording(false);
+        uploadVideoToServer(recorder.getBlob()).then(() => {
           alert('upload ok!');
         });
-        setVideoEdit((videoEdit) => ({...videoEdit, isRecording: false}));
       });
     };
 
@@ -59,11 +67,7 @@ const VideoEdit: React.FC /**
         if (!videoEdit.isRecording) {
           return;
         }
-        setVideoEdit((videoEdit) => ({
-          ...videoEdit,
-          // originalEditorData,
-          changes: [...videoEdit.changes, textData]
-        }));
+        addTextChange(textData);
       }, [setVideoEdit, videoEdit.isRecording]);
 
     return <Scaffold>
@@ -132,3 +136,20 @@ const videoEditState = atom<State>({
     videoObjectUrl: undefined,
   },
 });
+
+const uploadVideoToServer = (video: Blob) => {
+  const formData = new FormData();
+  formData.append('video', video);
+  return axios.post('http://10.10.20.230:3001/upload-video', formData);
+};
+
+const getCameraMirrorRefCallback = () => {
+  return useCallback<(el: HTMLVideoElement) => void>((el) => {
+    navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
+      if (el === null) {
+        return;
+      }
+      el.srcObject = stream;
+    });
+  }, []);
+};
