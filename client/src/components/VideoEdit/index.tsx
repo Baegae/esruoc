@@ -5,10 +5,11 @@ import axios from 'axios';
 let recorder: RecordRTC;
 
 import styled from 'styled-components';
-import EditorJSText from '../EditorJSTest';
+import Editor from '../Editor';
 import {RecoilRoot, atom, useRecoilState} from 'recoil/dist';
+import {OutputData} from '@editorjs/editorjs';
 
-const VideoEditTest: React.FC /**
+const VideoEdit: React.FC /**
  *
  */
   = () => {
@@ -34,10 +35,11 @@ const VideoEditTest: React.FC /**
     }, []);
 
     const handleStartClick = () => {
+    // TODO: 예전 텍스트로 리셋하기
       if (videoEdit.isRecording) {
         return;
       }
-      setVideoEdit({...videoEdit, isRecording: true});
+      setVideoEdit({...videoEdit, changes: [], isRecording: true});
       recorder.startRecording();
     };
     const handleStopClick = () => {
@@ -52,9 +54,21 @@ const VideoEditTest: React.FC /**
       });
     };
 
+    const handleTextDataChange = useCallback<(data: OutputData) => void>(
+      (textData) => {
+        if (!videoEdit.isRecording) {
+          return;
+        }
+        setVideoEdit((videoEdit) => ({
+          ...videoEdit,
+          // originalEditorData,
+          changes: [...videoEdit.changes, textData]
+        }));
+      }, [setVideoEdit, videoEdit.isRecording]);
+
     return <Scaffold>
       <EditorContainer>
-        <EditorJSText/>
+        <Editor onChange={handleTextDataChange}/>
       </EditorContainer>
       <VideoContainer>
         <CameraVideo
@@ -78,7 +92,7 @@ const VideoEditTest: React.FC /**
     </Scaffold>;
   };
 
-export default () => <RecoilRoot><VideoEditTest/></RecoilRoot>;
+export default () => <RecoilRoot><VideoEdit/></RecoilRoot>;
 
 const Scaffold = styled.div`
   display: flex;
