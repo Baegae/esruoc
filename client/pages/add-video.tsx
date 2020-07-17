@@ -1,4 +1,9 @@
 import React from 'react';
-import VideoTest from '../src/components/VideoTest';
+import dynamic from 'next/dynamic';
 
-export default () => <VideoTest />;
+const VideoEditTest = dynamic(() => import('../src/components/VideoEditTest'), {
+  ssr: false,
+});
+
+
+export default () => <VideoEditTest />;
