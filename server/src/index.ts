@@ -1,5 +1,5 @@
 import 'module-alias/register';
-import 'reflect-metadata'; // this shim is required
+import 'reflect-metadata';
 
 import {createExpressServer} from 'routing-controllers';
 import {connect as connectMongoDB} from '@database/Database';
