@@ -54,7 +54,7 @@ const Editor: React.FC<EditorProps> = ({data, onChange}) => {
   // TODO: MutationObserver로 효율성 개선하기
   useEffect(() => {
     const intervalId = setInterval(() => {
-      editorRef.current?.save().then(data => {
+      editorRef.current?.isReady.then(() => editorRef.current?.save()).then(data => {
         onChange(data);
       });
     }, 100);
@@ -65,7 +65,7 @@ const Editor: React.FC<EditorProps> = ({data, onChange}) => {
   }, [onChange]);
 
   const handleSave = () => {
-    editorRef.current?.save().then(data => {
+    editorRef.current?.isReady.then(() => editorRef.current?.save()).then(data => {
       console.log('save', data);
       setText(JSON.stringify(data));
     });
