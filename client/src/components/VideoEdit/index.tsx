@@ -110,21 +110,20 @@ const VideoEdit: React.FC /**
           controls={false}
           muted
         />
-        <div>
-        Record Preview
-          <video
-            onTimeUpdate={(event) => { setPreviewCurrentTime(event.currentTarget.currentTime); }}
+        {!videoEdit.isRecording
+          ? <RecordButton onClick={handleStartClick}>start recording</RecordButton>
+          : <RecordButton onClick={handleStopClick}>stop recording</RecordButton>}
+        {videoEdit.previewVideoObjectUrl && <div>
+          <h2>Record Preview</h2>
+          <PreviewVideo
+            onTimeUpdate={(event) => {
+              setPreviewCurrentTime(event.currentTarget.currentTime);
+            }}
             src={videoEdit.previewVideoObjectUrl}
             controls
             width="250"
           />
-          {!videoEdit.isRecording
-            ? <button onClick={handleStartClick}>start recording</button>
-            : <button onClick={handleStopClick}>stop recording</button>}
-          <button onClick={() => moveChangeIndex(1)}>+</button>
-          <span>{videoEdit.viewingChangeIndex}</span>
-          <button onClick={() => moveChangeIndex(-1)}>-</button>
-        </div>
+        </div>}
       </VideoContainer>
     </Scaffold>;
   };
@@ -132,6 +131,8 @@ const VideoEdit: React.FC /**
 export default () => <RecoilRoot><VideoEdit/></RecoilRoot>;
 
 const Scaffold = styled.div`
+  font-family: 'SpoqaHanSans';
+
   display: flex;
   flex-direction: row;
 `;
@@ -149,8 +150,16 @@ const CameraVideo = styled.video`
   transform: scaleX(-1);
 `;
 
+const PreviewVideo = styled.video`
+  transform: scaleX(-1);
+`;
+
 const EditorContainer = styled.div`
   flex: 1;
+`;
+
+const RecordButton = styled.button`
+  font-size: 2rem;
 `;
 
 interface State {
@@ -171,11 +180,7 @@ interface TextDataChange {
 const videoEditState = atom<State>({
   key: 'videoEditState',
   default: {
-    originalEditorData: {
-      'time': 1595005520857,
-      'blocks': [{'type': 'paragraph', 'data': {'text': '안녕 하세요<br>'}}],
-      'version': '2.18.0'
-    },
+    originalEditorData: {'time':1595009894317,'blocks':[{'type':'header','data':{'text':'새로운 강의 방식을 만들고 있어요.','level':2}},{'type':'paragraph','data':{'text':'노션처럼 쉬운 블록 기반 에디터와 중요한 정보를 효과적으로 알릴 수 있는 포맷팅 타임라인 기능.<br>웹에서 비디오 녹화까지.'}},{'type':'paragraph','data':{'text':'쉽게 제작하고, 효율적으로 온라인 강의를 체험해보세요'}}],'version':'2.18.0'},
     changes: [],
     viewingChangeIndex: -1,
     isRecording: false,
