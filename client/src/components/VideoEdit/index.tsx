@@ -76,9 +76,9 @@ const VideoEdit: React.FC /**
       recorder.stopRecording(() => {
         setPreviewUrl(recorder.toURL());
         setIsRecording(false);
-        uploadVideoToServer(recorder.getBlob()).then(() => {
-          alert('upload ok!');
-        });
+        // uploadVideoToServer(recorder.getBlob()).then(() => {
+        //   alert('upload ok!');
+        // });
       });
     };
 
