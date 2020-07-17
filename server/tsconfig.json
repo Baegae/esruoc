@@ -1,9 +1,26 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "sourceMap": true,
-    "emitDecoratorMetadata": true,
-    "outDir": "build"
+    "outDir": "./build",
+    "baseUrl": "./src",
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@database/*": [
+        "database/*"
+      ],
+      "@controller/*": [
+        "controller/*"
+      ],
+      "@repository/*": [
+        "repository/*"
+      ],
+      "@business/*": [
+        "business/*"
+      ],
+      "@shared/*": [
+        "../shared/src/*"
+      ]
+    }
   },
   "exclude": [
     "node_modules"
