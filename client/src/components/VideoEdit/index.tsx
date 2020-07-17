@@ -6,7 +6,7 @@ let recorder: RecordRTC;
 
 import styled from 'styled-components';
 import Editor from '../Editor';
-import {RecoilRoot, atom, useRecoilState} from 'recoil/dist';
+import {RecoilRoot, atom, useRecoilState, selector, useRecoilValue} from 'recoil/dist';
 import {OutputData} from '@editorjs/editorjs';
 
 const VideoEdit: React.FC /**
@@ -24,7 +24,9 @@ const VideoEdit: React.FC /**
         ...state,
         changes: [],
         viewingChangeIndex: -1,
-        videoObjectUrl: undefined,
+        recordingStartedAt: new Date().getTime(),
+        previewVideoObjectUrl: undefined,
+        previewCurrentTime: 0,
       }));
     };
 
@@ -32,7 +34,7 @@ const VideoEdit: React.FC /**
       setVideoEdit((videoEdit) => ({
         ...videoEdit,
         // originalEditorData,
-        changes: [...videoEdit.changes, textData]
+        changes: [...videoEdit.changes, { data:textData, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 }]
       }));
     };
 
@@ -41,7 +43,7 @@ const VideoEdit: React.FC /**
     };
 
     const setPreviewUrl = (url: string) => {
-      setVideoEdit((videoEdit) => ({...videoEdit, videoObjectUrl: url}));
+      setVideoEdit((videoEdit) => ({...videoEdit, previewVideoObjectUrl: url}));
     };
 
     const moveChangeIndex = (delta: number) => {
@@ -52,6 +54,10 @@ const VideoEdit: React.FC /**
         }
         return ({...state, viewingChangeIndex: state.viewingChangeIndex + delta});
       });
+    };
+
+    const setPreviewCurrentTime = (currentTime: number) => {
+      setVideoEdit((state) => ({...state, previewCurrentTime: currentTime}));
     };
 
     const videoRefCallback = getCameraMirrorRefCallback();
@@ -88,12 +94,12 @@ const VideoEdit: React.FC /**
           return;
         }
         addTextChange(textData);
-      }, [setVideoEdit, videoEdit.isRecording]);
+      }, [addTextChange, videoEdit.isRecording]);
 
     return <Scaffold>
       <EditorContainer>
         <Editor
-          data={!videoEdit.isRecording ? (videoEdit.viewingChangeIndex >= 0 ? videoEdit.changes[videoEdit.viewingChangeIndex] : videoEdit.originalEditorData) : undefined}
+          data={useRecoilValue(editorTextDataState)}
           onChange={handleTextDataChange}
         />
       </EditorContainer>
@@ -107,7 +113,8 @@ const VideoEdit: React.FC /**
         <div>
         Record Preview
           <video
-            src={videoEdit.videoObjectUrl}
+            onTimeUpdate={(event) => { setPreviewCurrentTime(event.currentTarget.currentTime); }}
+            src={videoEdit.previewVideoObjectUrl}
             controls
             width="250"
           />
@@ -148,10 +155,17 @@ const EditorContainer = styled.div`
 
 interface State {
   originalEditorData: any;
-  changes: any[];
+  changes: TextDataChange[];
   viewingChangeIndex: number;
   isRecording: boolean;
-  videoObjectUrl?: string;
+  recordingStartedAt: number;
+  previewVideoObjectUrl?: string;
+  previewCurrentTime: number;
+}
+
+interface TextDataChange {
+  data: OutputData;
+  videoTimestamp: number;
 }
 
 const videoEditState = atom<State>({
@@ -165,7 +179,32 @@ const videoEditState = atom<State>({
     changes: [],
     viewingChangeIndex: -1,
     isRecording: false,
-    videoObjectUrl: undefined,
+    recordingStartedAt: 0,
+    previewVideoObjectUrl: undefined,
+    previewCurrentTime: 0,
+  },
+});
+
+const previewTextChangeIndexState = selector({
+  key: 'previewTextChangeIndexState',
+  get: ({get}) => {
+    const videoEdit = get(videoEditState);
+    const index = [...videoEdit.changes].reverse().findIndex((textChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime);
+    return index === -1 ? -1 : videoEdit.changes.length - index - 1;
+  },
+});
+
+const editorTextDataState = selector({
+  key: 'editorTextDataState',
+  get: ({get}) => {
+    const videoEdit = get(videoEditState);
+    // NO CONTROL WHEN ENABLED WRITING
+    if (videoEdit.isRecording) {
+      return;
+    }
+    // CONTROL
+    const previewTextChangeIndex = get(previewTextChangeIndexState);
+    return (previewTextChangeIndex >= 0 ? videoEdit.changes[previewTextChangeIndex].data : videoEdit.originalEditorData);
   },
 });
 
