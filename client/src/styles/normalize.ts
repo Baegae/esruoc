@@ -4,6 +4,7 @@ const normalizeCss = css`
 html {
   line-height: 1.15; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
+  font-size: 16px;
 }
 
 body {
