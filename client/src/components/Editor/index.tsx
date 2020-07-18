@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, ChangeEventHandler, useState, useCallback } from 'react';
+import React, { useEffect, useRef, ChangeEventHandler, useState, useCallback, useLayoutEffect } from 'react';
 import EditorJS, { EditorConfig, OutputData, LogLevels } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
@@ -34,6 +34,7 @@ interface EditorProps {
   data?: OutputData;
   onChange: (data: OutputData) => void;
   onSelectionChange: (rectList?: EditorTextSelection[]) => void;
+  selection?: EditorTextSelection[];
 }
 
 export interface EditorTextSelection {
@@ -45,7 +46,7 @@ export interface EditorTextSelection {
 
 const getNumRange = (n: number) => [...Array(n)].map((_, index) => index);
 
-const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange }) => {
+const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, selection }) => {
   const editorRef = useRef<EditorJS | null>(null);
 
   useEffect(() => {
@@ -53,19 +54,24 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange }) =>
     // new EditorJS({...editorJsConfig, holder: 'editor9'});
   }, []);
 
-  const editorElRef = useRef<HTMLDivElement>(null);
+  const editorHighlightLayerElRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const listener = () => {
       const selection = document.getSelection();
-      if (!selection || !editorElRef.current) return;
+      const editorEl = editorHighlightLayerElRef.current;
+      if (!selection || !editorEl) return;
       const range = selection.getRangeAt(0);
-      if (range.intersectsNode(editorElRef.current)) {
+      if (range.intersectsNode(editorEl)) {
         console.log('SELECTION CHANGE', selection);
         const rects = range.getClientRects();
         onSelectionChange(
           getNumRange(rects.length)
             .map((index) => rects[index])
             .map(rect => ({ x: rect.x, y: rect.y, width: rect.width, height: rect.height }))
+            .map(rect => {
+              const editorRect = editorEl.getBoundingClientRect();
+              return ({ ...rect, x: (rect.x - editorRect.x), y: (rect.y - editorRect.y) });
+            })
         );
       } else {
         console.log('SELECTION OUT', selection);
@@ -118,12 +124,18 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange }) =>
     editorRef.current?.render(JSON.parse(text));
   };
 
-  return <div>
-    <EditorWrapper>
+  const renderHighlight = (textSelection: EditorTextSelection) => {
+    return <div style={{ position: 'absolute', left: textSelection.x, top: textSelection.y, width: textSelection.width, height: textSelection.height, backgroundColor: 'red' }}>highlight</div>;
+  };
 
-      <div id="editor"
-        ref={editorElRef}
+  return <div>
+    <EditorWrapper >
+      <div style={{ position: 'relative' }}
+        ref={editorHighlightLayerElRef}
       >
+        <div id="editor">
+        </div>
+        {selection && selection.length > 0 && renderHighlight(selection[0])}
       </div>
     </EditorWrapper>
     <button onClick={handleLoad}>

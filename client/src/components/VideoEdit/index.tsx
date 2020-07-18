@@ -21,6 +21,7 @@ const VideoEdit: React.FC = () => {
 
   const [videoEdit, setVideoEdit] = useRecoilState(videoEditState);
   const editorData = useRecoilValue(editorTextDataState);
+  const previewSelectionData = useRecoilValue(editorPreviewHighlightState);
 
   // a state observer for debugging
   useEffect(() => {
@@ -109,6 +110,7 @@ const VideoEdit: React.FC = () => {
         <Editor
           data={editorData}
           onChange={handleTextDataChange}
+          selection={previewSelectionData}
           onSelectionChange={handleSelectionChange}
         />
       </EditorContainer>
@@ -198,6 +200,21 @@ const editorTextDataState = selector({
     }
     // CONTROL
     return get(latestTextChangeState);
+  },
+});
+
+const editorPreviewHighlightState = selector<EditorTextSelection[] | undefined>({
+  key: 'editorPreviewHighlightState',
+  get: ({ get }) => {
+    const videoEdit = get(videoEditState);
+    // NO CONTROL WHEN ENABLED WRITING
+    if (videoEdit.isRecording) {
+      return;
+    }
+
+    const isChangeBeforeCurrentTime = (change: TextSelectionChange) => change.videoTimestamp <= videoEdit.previewCurrentTime;
+    const latestChangeBeforeCurrentTime = videoEdit.selectionChanges.filter(isChangeBeforeCurrentTime).slice(-1);
+    return (latestChangeBeforeCurrentTime.length > 0 ? latestChangeBeforeCurrentTime[0].data : undefined);
   },
 });
 
