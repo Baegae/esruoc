@@ -16,7 +16,8 @@
                     "./src"
                 ],
                 "alias": {
-                    "@src": "./src"
+                    "@src": "./src",
+                    "@shared": "../shared"
                 }
             }
         ]
