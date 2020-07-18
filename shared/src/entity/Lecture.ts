@@ -9,7 +9,7 @@ interface Lecture {
     // 강의자
     uploaderId: string;
     // 차시 목록
-    lessons?: [Lesson];
+    lessons?: Lesson[];
     // 대표 이미지 URL
     mainImageUrl?: string;
 }
