@@ -16,11 +16,12 @@
     "isolatedModules": true,
     "allowJs": false,
     "typeRoots": [
-      "node_modules"
+      "node_modules",
     ],
     "baseUrl": "./",
     "paths": {
       "@src/*": ["src/*"],
+      "@shared/*": ["../shared/*"],
     }
   },
   "exclude": [
