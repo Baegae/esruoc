@@ -83,15 +83,17 @@ const VideoEdit: React.FC = () => {
   return (
     <Scaffold>
       <EditorContainer>
-        {slideEditor.slides.map((_, index) => (
-          <button key={index} onClick={() => { setCurrentSlideIndex(index); }}>
+        {slideEditor.slides.map(({ id }, index) => (
+          <button key={id}
+            onClick={() => { setCurrentSlideIndex(index); }}
+          >
             {index}
           </button>
         ))}
-        {slideEditor.slides.map((_, index) => {
+        {slideEditor.slides.map(({ id }, index) => {
           return (
             <Slide
-              key={index}
+              key={id}
               slideIndex={index}
               selected={index === currentSlideIndex}
             />
@@ -187,6 +189,7 @@ enum EditingState {
 }
 
 interface SlideState {
+  id: string;
   originalEditorData: OutputData;
   changes: TextDataChange[];
   selectionChanges: TextSelectionChange[];
@@ -209,6 +212,7 @@ interface TextSelectionChange {
 const initialData: OutputData = { 'time': 1595009894317, 'blocks': [{ 'type': 'header', 'data': { 'text': '새로운 강의 방식을 만들고 있어요.', 'level': 2 } }, { 'type': 'paragraph', 'data': { 'text': '노션처럼 쉬운 블록 기반 에디터와 중요한 정보를 효과적으로 알릴 수 있는 포맷팅 타임라인 기능.<br>웹에서 비디오 녹화까지.' } }, { 'type': 'paragraph', 'data': { 'text': '쉽게 제작하고, 효율적으로 온라인 강의를 체험해보세요' } }], 'version': '2.18.0' };
 
 const defaultSlideData: SlideState = {
+  id: '0',
   originalEditorData: initialData,
   changes: [],
   selectionChanges: [],
@@ -222,7 +226,7 @@ const slideEditorState = atom<SlideEditorState>({
   key: 'slideEditorState',
   default: {
     currentSlideIndex: 0,
-    slides: [defaultSlideData, defaultSlideData],
+    slides: [defaultSlideData, Object.assign({ id: '1' }, defaultSlideData)],
     editingState: EditingState.Editing
   },
 });
