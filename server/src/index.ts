@@ -8,6 +8,7 @@ import {LectureController} from '@controller/LectureController';
 import {UserController} from '@controller/UserController';
 import {verifyJWT} from '@business/AuthService';
 import UserRepository from '@repository/UserRepository';
+import {ImageController} from '@controller/ImageController';
 
 import swaggerConfig from '../swagger.config';
 
@@ -16,7 +17,7 @@ const PORT = 8000;
 const swaggerSpec = swaggerConfig;
 const userRepository = new UserRepository();
 const app = createExpressServer({
-  controllers: [LectureController, UserController],
+  controllers: [LectureController, UserController, ImageController],
   currentUserChecker: async (action: Action, value?: any) => {
     const token = action.request.headers['authorization'];
     const uid = verifyJWT(token);
