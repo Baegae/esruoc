@@ -2,11 +2,13 @@ import LectureSchema from '@database/schema/LectureSchema';
 import Lecture from '@shared/entity/Lecture';
 import * as mongoose from 'mongoose';
 
-class LectureRepository {
-  private lectureSchema = mongoose.model<Lecture & mongoose.Document>('Lecture', LectureSchema);
+type LectureDocument = Lecture & mongoose.Document;
 
-  async saveLecture(lecture: Lecture) {
-    return this.lectureSchema.create(lecture);
+class LectureRepository {
+  private lectureSchema = mongoose.model<LectureDocument>('Lecture', LectureSchema);
+
+  async saveLecture(lecture: Lecture): Promise<LectureDocument> {
+    return await this.lectureSchema.create(lecture);
   }
 }
 
