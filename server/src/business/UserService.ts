@@ -23,7 +23,7 @@ export class UserService {
 
       return encodeJWT(user);
     } catch (e) {
-      throw new UnauthorizedError('인증 정보가 잘못되었습니다.');
+      throw new UnauthorizedError('Unauthorized');
     }
   }
 
