@@ -34,7 +34,7 @@ const LectureLessonList: React.FC<LectureLessonListProps> = ({ lessons }) => {
             </S.MetaWrapper>
           </Col>
           <Col sm={2}>
-            <button>play</button>
+            <S.PlayButton />
           </Col>
         </S.ItemWrapperRow>
       ))}

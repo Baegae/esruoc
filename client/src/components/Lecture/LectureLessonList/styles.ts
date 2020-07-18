@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Container, Row } from 'react-grid-system';
+import PlayButtonSvg from '@src/assets/play.svg';
 
 export const ListContainer = styled(Container)`
   margin-bottom: 10rem;
@@ -38,4 +39,10 @@ export const ItemWrapperRow = styled(Row)`
   &:hover {
     transform: scale(1.025);
   }
+`;
+
+// TODO: 다음에 들을 강의만 노란색으로 보여야함
+export const PlayButton = styled(PlayButtonSvg)`
+  width: 4rem;
+  height: auto;
 `;

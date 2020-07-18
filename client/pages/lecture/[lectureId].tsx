@@ -6,7 +6,7 @@ import Lecture from '@shared/src/entity/Lecture';
 import LectureLessonList from '@src/components/Lecture/LectureLessonList';
 
 const LectureDetailPage = () => {
-  // TODO: Should load lecture data from server
+  // TODO: 서버로 부터 강의 정보를 불러와야함
   // const router = useRouter();
   // const { lectureId } = router.query;
   const lectureData: Lecture = {
