@@ -46,7 +46,7 @@ const VideoEdit: React.FC = () => {
     }));
   };
 
-  // // TODO: Changes encoding through coordinate to 
+  // TODO: Node기반 position으로 바꾸어 responsive하게 동작하게 만들기 
   const addSelectionChange = (rects?: EditorTextSelection[]) => {
     setVideoEdit((state) => produce(state, (draftState) => {
       draftState.selectionChanges.push({ data: rects, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 });
