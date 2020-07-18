@@ -42,7 +42,7 @@ export class UserController {
    *       - application/json
    *     parameters:
    *      - in: body
-   *        name: googleAccesstoken
+   *        name: googleAccessToken
    *        description: Firebase AccessToken
    *        type: string
    *
