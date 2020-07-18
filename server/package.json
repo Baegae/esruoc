@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "0.1.0",
-  "description": "Backend (Server) for Lectus Project",
+  "description": "Backend (Server) for Esruoc Project",
   "main": "build/index.js",
   "author": "Baegae Team",
   "license": "MIT",

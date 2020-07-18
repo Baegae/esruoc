@@ -2,7 +2,7 @@ version: '3'
 
 services:
   dev_lectus:
-    image: docker.pkg.github.com/baegae/lectus/lectus-dev-environment:0.14
+    image: docker.pkg.github.com/baegae/esruoc/esruoc-dev-environment:0.14
     ports:
     - 3000:3000
     - 8000:8000
