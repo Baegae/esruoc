@@ -11,3 +11,4 @@ services:
     - .:/lectus
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/lectus/server/credential/esrouc-firebase-credential.json
+      - GOOGLE_FIREBASE_STORAGE_BUCKET=<GOOGLE CLOUD STORAGE BUCKET NAME>
