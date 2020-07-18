@@ -3,7 +3,7 @@ import RecordRTC from 'recordrtc';
 import axios from 'axios';
 import produce from 'immer';
 import Editor, { EditorTextSelection } from '../Editor';
-import { atom, RecoilRoot, selector, useRecoilState, useRecoilValue, DefaultValue } from 'recoil/dist';
+import { atom, RecoilRoot, selector, useRecoilState, useRecoilValue, DefaultValue, selectorFamily } from 'recoil/dist';
 import { OutputData } from '@editorjs/editorjs';
 import { CameraVideo, EditorContainer, PreviewVideo, RecordButton, Scaffold, VideoContainer } from './styles';
 
@@ -19,18 +19,20 @@ const VideoEdit: React.FC = () => {
     });
   }, []);
 
-  const [videoEdit, setVideoEdit] = useRecoilState(currentSlideState);
-  const editorData = useRecoilValue(editorTextDataState);
-  const previewSelectionData = useRecoilValue(editorPreviewHighlightState);
+  const [slideEditor] = useRecoilState(slideEditorState);
+  const { currentSlideIndex } = slideEditor;
+  const [currentSlide, setCurrentSlide] = useRecoilState(getSlideState(currentSlideIndex));
+  const editorData = useRecoilValue(editorTextDataState(currentSlideIndex));
+  const previewSelectionData = useRecoilValue(editorPreviewHighlightState(currentSlideIndex));
 
   // a state observer for debugging
   useEffect(() => {
-    console.log('ATOM', videoEdit);
-  }, [videoEdit]);
+    console.log('ATOM', currentSlide);
+  }, [currentSlide]);
 
   // Actions for state
   const resetAndStartRecording = () => {
-    setVideoEdit((state) => ({
+    setCurrentSlide((state) => ({
       ...state,
       changes: [],
       selectionChanges: [],
@@ -41,33 +43,33 @@ const VideoEdit: React.FC = () => {
   };
 
   const addTextChange = useCallback<(data: OutputData) => void>((textData: OutputData) => {
-    setVideoEdit((state) => produce(state, (draftState) => {
-      draftState.changes.push({ data: textData, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 });
+    setCurrentSlide((state) => produce(state, (draftState) => {
+      draftState.changes.push({ data: textData, videoTimestamp: (new Date().getTime() - currentSlide.recordingStartedAt) / 1000 });
     }));
-  }, [videoEdit.recordingStartedAt, setVideoEdit]);
+  }, [currentSlide.recordingStartedAt, setCurrentSlide]);
 
   // TODO: Node기반 position으로 바꾸어 responsive하게 동작하게 만들기 
   const addSelectionChange = (rects?: EditorTextSelection[]) => {
-    setVideoEdit((state) => produce(state, (draftState) => {
-      draftState.selectionChanges.push({ data: rects, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 });
+    setCurrentSlide((state) => produce(state, (draftState) => {
+      draftState.selectionChanges.push({ data: rects, videoTimestamp: (new Date().getTime() - currentSlide.recordingStartedAt) / 1000 });
     }));
   };
 
   const setIsRecording = (isRecording: boolean) => {
-    setVideoEdit((videoEdit) => ({ ...videoEdit, isRecording }));
+    setCurrentSlide((videoEdit) => ({ ...videoEdit, isRecording }));
   };
 
   const setPreviewUrl = (url: string) => {
-    setVideoEdit((videoEdit) => ({ ...videoEdit, previewVideoObjectUrl: url }));
+    setCurrentSlide((videoEdit) => ({ ...videoEdit, previewVideoObjectUrl: url }));
   };
 
   const setPreviewCurrentTime = (currentTime: number) => {
-    setVideoEdit((state) => ({ ...state, previewCurrentTime: currentTime }));
+    setCurrentSlide((state) => ({ ...state, previewCurrentTime: currentTime }));
   };
 
   // Handlers
   const handleStartClick = () => {
-    if (videoEdit.isRecording) {
+    if (currentSlide.isRecording) {
       return;
     }
     setIsRecording(true);
@@ -87,14 +89,14 @@ const VideoEdit: React.FC = () => {
 
   const handleTextDataChange = useCallback<(data: OutputData) => void>(
     (textData) => {
-      if (!videoEdit.isRecording) {
+      if (!currentSlide.isRecording) {
         return;
       }
       addTextChange(textData);
-    }, [addTextChange, videoEdit.isRecording]);
+    }, [addTextChange, currentSlide.isRecording]);
 
   const handleSelectionChange = (rects?: EditorTextSelection[]) => {
-    if (!videoEdit.isRecording) {
+    if (!currentSlide.isRecording) {
       return;
     }
     addSelectionChange(rects);
@@ -121,14 +123,14 @@ const VideoEdit: React.FC = () => {
           controls={false}
           muted
         />
-        {!videoEdit.isRecording
+        {!currentSlide.isRecording
           ? <RecordButton onClick={handleStartClick}>start recording</RecordButton>
           : <RecordButton onClick={handleStopClick}>stop recording</RecordButton>}
-        {videoEdit.previewVideoObjectUrl && <div>
+        {currentSlide.previewVideoObjectUrl && <div>
           <h2>Record Preview</h2>
           <PreviewVideo
             onTimeUpdate={handlePreviewTimeUpdate}
-            src={videoEdit.previewVideoObjectUrl}
+            src={currentSlide.previewVideoObjectUrl}
             controls
             width="250"
           />
@@ -197,27 +199,44 @@ const slideEditorState = atom<SlideEditorState>({
   },
 });
 
-const currentSlideState = selector<SlideState>({
+// const currentSlideState = selector<SlideState>({
+//   key: 'currentSlideState',
+//   get: ({ get }) => {
+//     const slideEditor = get(slideEditorState);
+//     return slideEditor.slides[slideEditor.currentSlideIndex];
+//   },
+//   set: ({ get, set }, newValue) => {
+//     set(slideEditorState, produce(get(slideEditorState), draftState => {
+//       if (newValue instanceof DefaultValue) {
+//         draftState.slides[draftState.currentSlideIndex] = defaultSlideData;
+//         return;
+//       }
+//       draftState.slides[draftState.currentSlideIndex] = newValue;
+//     }));
+//   },
+// });
+
+const getSlideState = selectorFamily<SlideState, number>({
   key: 'currentSlideState',
-  get: ({ get }) => {
+  get: slideIndex => ({ get }) => {
     const slideEditor = get(slideEditorState);
-    return slideEditor.slides[slideEditor.currentSlideIndex];
+    return slideEditor.slides[slideIndex];
   },
-  set: ({ get, set }, newValue) => {
+  set: slideIndex => ({ get, set }, newValue) => {
     set(slideEditorState, produce(get(slideEditorState), draftState => {
       if (newValue instanceof DefaultValue) {
-        draftState.slides[draftState.currentSlideIndex] = defaultSlideData;
+        draftState.slides[slideIndex] = defaultSlideData;
         return;
       }
-      draftState.slides[draftState.currentSlideIndex] = newValue;
+      draftState.slides[slideIndex] = newValue;
     }));
   },
 });
 
-const latestTextChangeState = selector<OutputData>({
+const latestTextChangeState = selectorFamily<OutputData, number>({
   key: 'latestTextChangeState',
-  get: ({ get }) => {
-    const videoEdit = get(currentSlideState);
+  get: slideIndex => ({ get }) => {
+    const videoEdit = get(getSlideState(slideIndex));
     const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime;
     const latestChangeBeforeCurrentTime = videoEdit.changes.filter(isChangeBeforeCurrentTime).slice(-1);
     // 최근 수정 사항이 없으면 첫 text로 시작함
@@ -225,23 +244,23 @@ const latestTextChangeState = selector<OutputData>({
   },
 });
 
-const editorTextDataState = selector({
+const editorTextDataState = selectorFamily<OutputData | undefined, number>({
   key: 'editorTextDataState',
-  get: ({ get }) => {
-    const videoEdit = get(currentSlideState);
+  get: slideIndex => ({ get }) => {
+    const videoEdit = get(getSlideState(slideIndex));
     // NO CONTROL WHEN ENABLED WRITING
     if (videoEdit.isRecording) {
       return;
     }
     // CONTROL
-    return get(latestTextChangeState);
+    return get(latestTextChangeState(slideIndex));
   },
 });
 
-const editorPreviewHighlightState = selector<EditorTextSelection[] | undefined>({
+const editorPreviewHighlightState = selectorFamily<EditorTextSelection[] | undefined, number>({
   key: 'editorPreviewHighlightState',
-  get: ({ get }) => {
-    const videoEdit = get(currentSlideState);
+  get: slideIndex => ({ get }) => {
+    const videoEdit = get(getSlideState(slideIndex));
     // NO CONTROL WHEN ENABLED WRITING
     if (videoEdit.isRecording) {
       return;
