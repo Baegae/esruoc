@@ -2,7 +2,7 @@ import { css } from 'styled-components';
 
 const normalizeCss = css`
 html {
-  line-height: 1.15; /* 1 */
+  line-height: 1.45; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
   font-size: 16px;
 }
@@ -21,7 +21,6 @@ main {
 
 h1 {
   font-size: 2em;
-  margin: 0.67em 0;
 }
 
 hr {
