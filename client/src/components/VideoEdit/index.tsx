@@ -21,7 +21,7 @@ const VideoEdit: React.FC = () => {
 
   const [slideEditor, setSlideEditor] = useRecoilState(slideEditorState);
   const { currentSlideIndex } = slideEditor;
-  const [currentSlide, setCurrentSlide] = useRecoilState(getSlideState(currentSlideIndex));
+  const [currentSlide, setCurrentSlide] = useRecoilState(slideState(currentSlideIndex));
 
   // a state observer for debugging
   useEffect(() => {
@@ -128,7 +128,7 @@ const Slide: React.FC<{ slideIndex: number; selected?: boolean }> = ({ slideInde
   const editorData = useRecoilValue(editorTextDataState(slideIndex));
   const previewSelectionData = useRecoilValue(editorPreviewHighlightState(slideIndex));
 
-  const [currentSlide, setCurrentSlide] = useRecoilState(getSlideState(slideIndex));
+  const [currentSlide, setCurrentSlide] = useRecoilState(slideState(slideIndex));
 
   const addTextChange = useCallback<(data: OutputData) => void>((textData: OutputData) => {
     setCurrentSlide((state) => produce(state, (draftState) => {
@@ -183,10 +183,10 @@ interface SlideEditorState {
   editingState: EditingState;
 }
 
-// TODO:
-// Recording에서 change 기록 및 비디오 녹화
-// Editing에서 originalEditorData를 변경할 수 있게
-// Previewing에서 녹화한 강의 재생 (contenteditable=false)
+// TODO: 학생이 강의 재생하고 강사는 녹화하고 자료 수정하고 세 작업을 하려면 아래 플래그가 필요함
+// Recording에서만 change 기록 및 비디오 녹화
+// Editing에서만 originalEditorData를 변경할 수 있게
+// Previewing에서는 녹화한 강의 재생만 (contenteditable=false)
 enum EditingState {
   Recording,
   Editing,
@@ -236,8 +236,8 @@ const slideEditorState = atom<SlideEditorState>({
   },
 });
 
-const getSlideState = selectorFamily<SlideState, number>({
-  key: 'currentSlideState',
+const slideState = selectorFamily<SlideState, number>({
+  key: 'slideState',
   get: slideIndex => ({ get }) => {
     const slideEditor = get(slideEditorState);
     return slideEditor.slides[slideIndex];
@@ -256,7 +256,7 @@ const getSlideState = selectorFamily<SlideState, number>({
 const latestTextChangeState = selectorFamily<OutputData, number>({
   key: 'latestTextChangeState',
   get: slideIndex => ({ get }) => {
-    const videoEdit = get(getSlideState(slideIndex));
+    const videoEdit = get(slideState(slideIndex));
     const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime;
     const latestChangeBeforeCurrentTime = videoEdit.changes.filter(isChangeBeforeCurrentTime).slice(-1);
     // 최근 수정 사항이 없으면 첫 text로 시작함
@@ -267,7 +267,7 @@ const latestTextChangeState = selectorFamily<OutputData, number>({
 const editorTextDataState = selectorFamily<OutputData | undefined, number>({
   key: 'editorTextDataState',
   get: slideIndex => ({ get }) => {
-    const videoEdit = get(getSlideState(slideIndex));
+    const videoEdit = get(slideState(slideIndex));
     // NO CONTROL WHEN ENABLED WRITING
     if (videoEdit.isRecording) {
       return;
@@ -280,7 +280,7 @@ const editorTextDataState = selectorFamily<OutputData | undefined, number>({
 const editorPreviewHighlightState = selectorFamily<EditorTextSelection[] | undefined, number>({
   key: 'editorPreviewHighlightState',
   get: slideIndex => ({ get }) => {
-    const videoEdit = get(getSlideState(slideIndex));
+    const videoEdit = get(slideState(slideIndex));
     // NO CONTROL WHEN ENABLED WRITING
     if (videoEdit.isRecording) {
       return;
