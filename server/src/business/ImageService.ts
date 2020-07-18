@@ -26,7 +26,7 @@ export class ImageService {
     const imageUrl = await getUnsignedUrl(`image/${randomKey}`);
 
     return {
-      success: 0,
+      success: 1,
       file: {
         url: imageUrl,
         name: fileName
