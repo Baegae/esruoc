@@ -1,6 +1,6 @@
 # 유저 로그인
 POST http://127.0.0.1:8000/user/login
-Content-Type: application/json; boundary=boundary
+Content-Type: application/json;
 
 {
   "googleAccessToken": "test"
