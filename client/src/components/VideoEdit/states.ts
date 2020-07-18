@@ -37,10 +37,10 @@ interface TextDataChange {
 // Editing에서만 originalEditorData를 변경할 수 있게
 // Previewing에서는 녹화한 강의 재생만 (contenteditable=false)
 enum EditingState {
-    Recording,
-    Editing,
-    Previewing,
-  }
+  Recording,
+  Editing,
+  Previewing,
+}
   
 export const initialData: OutputData = { 'time': 1595009894317, 'blocks': [{ 'type': 'header', 'data': { 'text': '새로운 강의 방식을 만들고 있어요.', 'level': 2 } }, { 'type': 'paragraph', 'data': { 'text': '노션처럼 쉬운 블록 기반 에디터와 중요한 정보를 효과적으로 알릴 수 있는 포맷팅 타임라인 기능.<br>웹에서 비디오 녹화까지.' } }, { 'type': 'paragraph', 'data': { 'text': '쉽게 제작하고, 효율적으로 온라인 강의를 체험해보세요' } }], 'version': '2.18.0' };
 
