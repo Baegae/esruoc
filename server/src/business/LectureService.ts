@@ -1,6 +1,6 @@
 import CreateLectureRequest from '@shared/request/CreateLectureRequest';
 import LectureRepository from '@repository/LectureRepository';
-import {getDownloadUrl, uploadFileToStorage} from '@database/Firebase';
+import {getSignedUrl, getUnsignedUrl, uploadFileToStorage} from '@database/Firebase';
 import CreateLectureResponse from '@shared/response/CreateLectureResponse';
 import Lesson from '@shared/entity/Lesson';
 import CreateLessonResponse from '@shared/response/CreateLessonResponse';
@@ -19,7 +19,7 @@ class CreateLectureService {
       });
 
       await uploadFileToStorage(`lecture/${savedLecture._id}`, 'MainImage', lectureMainImage);
-      const mainImageUrl = await getDownloadUrl(`lecture/${savedLecture._id}/MainImage`);
+      const mainImageUrl = await getUnsignedUrl(`lecture/${savedLecture._id}/MainImage`);
 
       return {
         id: savedLecture.id.toString(),
@@ -42,7 +42,7 @@ class CreateLectureService {
 
       const savePath = `lecture/${lecture.id}/lessons/${savedLesson._id.toString()}`;
       await uploadFileToStorage(savePath, 'LessonVideo', videoFile);
-      const lessonVideoUrl = await getDownloadUrl(`${savePath}/LessonVideo`);
+      const lessonVideoUrl = await getSignedUrl(`${savePath}/LessonVideo`);
 
       const result = {
         lectureId: lecture.id,
