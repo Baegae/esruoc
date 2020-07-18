@@ -37,7 +37,7 @@ const paragraphStyle = css`
     font-family: 'KoPub Batang', serif;
     color: ${({theme}) => theme.colors.text.default};
     font-size: 1.375rem;
-    
+    word-break: keep-all;
     b {
       color: ${({theme}) => theme.colors.black};
     }
@@ -152,7 +152,13 @@ const inlineToolStyle = css`
 `;
 
 const blockStyle = css`
+  .ce-toolbar__content {
+    max-width: none;
+  }
   .ce-block {
+    &__content {
+      max-width: none;
+    }
     &--drop-target {
       > div {
         border: 0;
