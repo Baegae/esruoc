@@ -1,10 +1,11 @@
-import React, {ChangeEventHandler, useCallback, useEffect} from 'react';
+import React, { ChangeEventHandler, useCallback, useEffect } from 'react';
 import RecordRTC from 'recordrtc';
 import axios from 'axios';
-import Editor from '../Editor';
-import {atom, RecoilRoot, selector, useRecoilState, useRecoilValue} from 'recoil/dist';
-import {OutputData} from '@editorjs/editorjs';
-import {CameraVideo, EditorContainer, PreviewVideo, RecordButton, Scaffold, VideoContainer} from './styles';
+import produce from 'immer';
+import Editor, { EditorTextSelection } from '../Editor';
+import { atom, RecoilRoot, selector, useRecoilState, useRecoilValue } from 'recoil/dist';
+import { OutputData } from '@editorjs/editorjs';
+import { CameraVideo, EditorContainer, PreviewVideo, RecordButton, Scaffold, VideoContainer } from './styles';
 
 let recorder: RecordRTC;
 
@@ -13,13 +14,14 @@ const VideoEdit: React.FC = () => {
   const videoRefCallback = getCameraMirrorRefCallback();
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
-      recorder = new RecordRTC(stream, {type: 'video', video: {width: 1920, height: 1080}});
+    navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
+      recorder = new RecordRTC(stream, { type: 'video', video: { width: 1920, height: 1080 } });
     });
   }, []);
 
   const [videoEdit, setVideoEdit] = useRecoilState(videoEditState);
   const editorData = useRecoilValue(editorTextDataState);
+  const previewSelectionData = useRecoilValue(editorPreviewHighlightState);
 
   // a state observer for debugging
   useEffect(() => {
@@ -31,7 +33,7 @@ const VideoEdit: React.FC = () => {
     setVideoEdit((state) => ({
       ...state,
       changes: [],
-      viewingChangeIndex: -1,
+      selectionChanges: [],
       recordingStartedAt: new Date().getTime(),
       previewVideoObjectUrl: undefined,
       previewCurrentTime: 0,
@@ -39,23 +41,28 @@ const VideoEdit: React.FC = () => {
   };
 
   const addTextChange = (textData: OutputData) => {
-    setVideoEdit((videoEdit) => ({
-      ...videoEdit,
-      // originalEditorData,
-      changes: [...videoEdit.changes, { data:textData, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 }]
+    setVideoEdit((state) => produce(state, (draftState) => {
+      draftState.changes.push({ data: textData, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 });
+    }));
+  };
+
+  // TODO: Node기반 position으로 바꾸어 responsive하게 동작하게 만들기 
+  const addSelectionChange = (rects?: EditorTextSelection[]) => {
+    setVideoEdit((state) => produce(state, (draftState) => {
+      draftState.selectionChanges.push({ data: rects, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 });
     }));
   };
 
   const setIsRecording = (isRecording: boolean) => {
-    setVideoEdit((videoEdit) => ({...videoEdit, isRecording}));
+    setVideoEdit((videoEdit) => ({ ...videoEdit, isRecording }));
   };
 
   const setPreviewUrl = (url: string) => {
-    setVideoEdit((videoEdit) => ({...videoEdit, previewVideoObjectUrl: url}));
+    setVideoEdit((videoEdit) => ({ ...videoEdit, previewVideoObjectUrl: url }));
   };
 
   const setPreviewCurrentTime = (currentTime: number) => {
-    setVideoEdit((state) => ({...state, previewCurrentTime: currentTime}));
+    setVideoEdit((state) => ({ ...state, previewCurrentTime: currentTime }));
   };
 
   // Handlers
@@ -86,6 +93,13 @@ const VideoEdit: React.FC = () => {
       addTextChange(textData);
     }, [addTextChange, videoEdit.isRecording]);
 
+  const handleSelectionChange = (rects?: EditorTextSelection[]) => {
+    if (!videoEdit.isRecording) {
+      return;
+    }
+    addSelectionChange(rects);
+  };
+
   const handlePreviewTimeUpdate: ChangeEventHandler<HTMLVideoElement> = (event) => {
     setPreviewCurrentTime(event.currentTarget.currentTime);
   };
@@ -96,6 +110,8 @@ const VideoEdit: React.FC = () => {
         <Editor
           data={editorData}
           onChange={handleTextDataChange}
+          selection={previewSelectionData}
+          onSelectionChange={handleSelectionChange}
         />
       </EditorContainer>
       <VideoContainer>
@@ -124,13 +140,14 @@ const VideoEdit: React.FC = () => {
 
 export default () => (
   <RecoilRoot>
-    <VideoEdit/>
+    <VideoEdit />
   </RecoilRoot>
 );
 
 interface State {
-  originalEditorData: any;
+  originalEditorData: OutputData;
   changes: TextDataChange[];
+  selectionChanges: TextSelectionChange[];
   isRecording: boolean;
   recordingStartedAt: number;
   previewVideoObjectUrl?: string;
@@ -142,11 +159,19 @@ interface TextDataChange {
   videoTimestamp: number;
 }
 
+interface TextSelectionChange {
+  data?: EditorTextSelection[];
+  videoTimestamp: number;
+}
+
+const initialData: OutputData = { 'time': 1595009894317, 'blocks': [{ 'type': 'header', 'data': { 'text': '새로운 강의 방식을 만들고 있어요.', 'level': 2 } }, { 'type': 'paragraph', 'data': { 'text': '노션처럼 쉬운 블록 기반 에디터와 중요한 정보를 효과적으로 알릴 수 있는 포맷팅 타임라인 기능.<br>웹에서 비디오 녹화까지.' } }, { 'type': 'paragraph', 'data': { 'text': '쉽게 제작하고, 효율적으로 온라인 강의를 체험해보세요' } }], 'version': '2.18.0' };
+
 const videoEditState = atom<State>({
   key: 'videoEditState',
   default: {
-    originalEditorData: {'time':1595009894317,'blocks':[{'type':'header','data':{'text':'새로운 강의 방식을 만들고 있어요.','level':2}},{'type':'paragraph','data':{'text':'노션처럼 쉬운 블록 기반 에디터와 중요한 정보를 효과적으로 알릴 수 있는 포맷팅 타임라인 기능.<br>웹에서 비디오 녹화까지.'}},{'type':'paragraph','data':{'text':'쉽게 제작하고, 효율적으로 온라인 강의를 체험해보세요'}}],'version':'2.18.0'},
+    originalEditorData: initialData,
     changes: [],
+    selectionChanges: [],
     isRecording: false,
     recordingStartedAt: 0,
     previewVideoObjectUrl: undefined,
@@ -154,9 +179,9 @@ const videoEditState = atom<State>({
   },
 });
 
-const latestTextChangeState = selector<OutputData | undefined>({
+const latestTextChangeState = selector<OutputData>({
   key: 'latestTextChangeState',
-  get: ({get}) => {
+  get: ({ get }) => {
     const videoEdit = get(videoEditState);
     const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime;
     const latestChangeBeforeCurrentTime = videoEdit.changes.filter(isChangeBeforeCurrentTime).slice(-1);
@@ -167,7 +192,7 @@ const latestTextChangeState = selector<OutputData | undefined>({
 
 const editorTextDataState = selector({
   key: 'editorTextDataState',
-  get: ({get}) => {
+  get: ({ get }) => {
     const videoEdit = get(videoEditState);
     // NO CONTROL WHEN ENABLED WRITING
     if (videoEdit.isRecording) {
@@ -175,6 +200,21 @@ const editorTextDataState = selector({
     }
     // CONTROL
     return get(latestTextChangeState);
+  },
+});
+
+const editorPreviewHighlightState = selector<EditorTextSelection[] | undefined>({
+  key: 'editorPreviewHighlightState',
+  get: ({ get }) => {
+    const videoEdit = get(videoEditState);
+    // NO CONTROL WHEN ENABLED WRITING
+    if (videoEdit.isRecording) {
+      return;
+    }
+
+    const isChangeBeforeCurrentTime = (change: TextSelectionChange) => change.videoTimestamp <= videoEdit.previewCurrentTime;
+    const latestChangeBeforeCurrentTime = videoEdit.selectionChanges.filter(isChangeBeforeCurrentTime).slice(-1);
+    return (latestChangeBeforeCurrentTime.length > 0 ? latestChangeBeforeCurrentTime[0].data : undefined);
   },
 });
 
@@ -186,7 +226,7 @@ const uploadVideoToServer = (video: Blob) => {
 
 const getCameraMirrorRefCallback = () => {
   return useCallback<(el: HTMLVideoElement) => void>((el) => {
-    navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
+    navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
       if (el === null) {
         return;
       }

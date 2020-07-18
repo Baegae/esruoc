@@ -1,14 +1,16 @@
-import React, {useEffect, useRef, ChangeEventHandler, useState} from 'react';
-import EditorJS, {EditorConfig, OutputData} from '@editorjs/editorjs';
+import React, { useEffect, useRef, ChangeEventHandler, useState, useCallback, useLayoutEffect } from 'react';
+import EditorJS, { EditorConfig, OutputData, LogLevels } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Underline from '@editorjs/underline';
 import Marker from '@editorjs/marker';
 import QuizBlockPlugin from './QuizBlock/plugin';
 import EditorWrapper from '@src/styles/EditorWrapper';
+import styled from 'styled-components';
 
 const editorJsConfig: EditorConfig = {
-  onChange: console.log,
+  onChange: (change) => { console.log('editorJS', change); },
+  logLevel: 'WARN' as LogLevels.WARN,
   holder: 'editor',
   tools: {
     header: Header,
@@ -29,19 +31,59 @@ const editorJsConfig: EditorConfig = {
   },
 };
 
-
 interface EditorProps {
   data?: OutputData;
   onChange: (data: OutputData) => void;
+  onSelectionChange: (rectList?: EditorTextSelection[]) => void;
+  selection?: EditorTextSelection[];
 }
 
-const Editor: React.FC<EditorProps> = ({data, onChange}) => {
+export interface EditorTextSelection {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+const getNumRange = (n: number) => [...Array(n)].map((_, index) => index);
+
+const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, selection }) => {
   const editorRef = useRef<EditorJS | null>(null);
 
   useEffect(() => {
-    editorRef.current = new EditorJS(Object.assign({}, editorJsConfig, {data}));
+    editorRef.current = new EditorJS(Object.assign({}, editorJsConfig, { data }));
     // new EditorJS({...editorJsConfig, holder: 'editor9'});
   }, []);
+
+  const editorHighlightLayerElRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const listener = () => {
+      const selection = document.getSelection();
+      const editorEl = editorHighlightLayerElRef.current;
+      if (!selection || !editorEl) return;
+      const range = selection.getRangeAt(0);
+      if (range.intersectsNode(editorEl)) {
+        console.log('SELECTION CHANGE', selection);
+        const rects = range.getClientRects();
+        onSelectionChange(
+          getNumRange(rects.length)
+            .map((index) => rects[index])
+            .map(rect => ({ x: rect.x, y: rect.y, width: rect.width, height: rect.height }))
+            .map(rect => {
+              const editorRect = editorEl.getBoundingClientRect();
+              return ({ ...rect, x: (rect.x - editorRect.x), y: (rect.y - editorRect.y) });
+            })
+        );
+      } else {
+        console.log('SELECTION OUT', selection);
+        onSelectionChange(undefined);
+      }
+    };
+    document.addEventListener('selectionchange', listener);
+    return () => {
+      document.removeEventListener('selectionchange', listener);
+    };
+  }, [onSelectionChange]);
 
   useEffect(() => {
     if (!data) {
@@ -83,9 +125,23 @@ const Editor: React.FC<EditorProps> = ({data, onChange}) => {
     editorRef.current?.render(JSON.parse(text));
   };
 
+  const renderHighlight = (textSelection: EditorTextSelection) => {
+    const rectStyle = { left: textSelection.x, top: textSelection.y, width: textSelection.width, height: textSelection.height };
+    if (textSelection.width === 0) {
+      return <Caret style={{ ...rectStyle, width: 3 }}/>;
+    }
+    return <LineSelection style={rectStyle} />;
+  };
+
   return <div>
-    <EditorWrapper>
-      <div id="editor" />
+    <EditorWrapper >
+      <div style={{ position: 'relative' }}
+        ref={editorHighlightLayerElRef}
+      >
+        <div id="editor">
+        </div>
+        {selection && selection.length > 0 && renderHighlight(selection[0])}
+      </div>
     </EditorWrapper>
     <button onClick={handleLoad}>
       load
@@ -99,5 +155,17 @@ const Editor: React.FC<EditorProps> = ({data, onChange}) => {
     </button>
   </div>;
 };
+
+const Caret = styled.div`
+  position: absolute;
+  background-color: red;
+`;
+
+const LineSelection = styled.div`
+  position: absolute;
+  background-color: red;
+  opacity: 0.5;
+`;
+
 
 export default Editor;
