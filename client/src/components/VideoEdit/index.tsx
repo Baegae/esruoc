@@ -1,27 +1,40 @@
-import React, { ChangeEventHandler, useCallback, useEffect } from 'react';
+import React, { ChangeEventHandler, useEffect } from 'react';
 import RecordRTC from 'recordrtc';
-import axios from 'axios';
+import { RecoilRoot, useRecoilState } from 'recoil';
 import produce from 'immer';
-import Editor, { EditorTextSelection } from '../Editor';
-import { atom, RecoilRoot, selector, useRecoilState, useRecoilValue, DefaultValue, selectorFamily } from 'recoil/dist';
-import { OutputData } from '@editorjs/editorjs';
-import { CameraVideo, EditorContainer, PreviewVideo, RecordButton, Scaffold, VideoContainer } from './styles';
+import {
+  CameraVideo,
+  EditorContainer,
+  PreviewVideo,
+  RecordButton,
+  Scaffold,
+  VideoContainer,
+} from './styles';
+import { getCameraMirrorRefCallback } from './utils';
+import { slideEditorState, createNewSlideData, slideState } from './states';
+import Slide from './Slide';
 
 let recorder: RecordRTC;
 
 const VideoEdit: React.FC = () => {
-
   const videoRefCallback = getCameraMirrorRefCallback();
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
-      recorder = new RecordRTC(stream, { type: 'video', video: { width: 1920, height: 1080 } });
-    });
+    navigator.mediaDevices
+      .getUserMedia({ audio: true, video: true })
+      .then((stream) => {
+        recorder = new RecordRTC(stream, {
+          type: 'video',
+          video: { width: 1920, height: 1080 },
+        });
+      });
   }, []);
 
   const [slideEditor, setSlideEditor] = useRecoilState(slideEditorState);
   const { currentSlideIndex } = slideEditor;
-  const [currentSlide, setCurrentSlide] = useRecoilState(slideState(currentSlideIndex));
+  const [currentSlide, setCurrentSlide] = useRecoilState(
+    slideState(currentSlideIndex)
+  );
 
   // a state observer for debugging
   useEffect(() => {
@@ -33,10 +46,12 @@ const VideoEdit: React.FC = () => {
   };
 
   const addDefaultSlideToLast = () => {
-    setSlideEditor((state) => produce(state, draftState => {
-      draftState.slides.push(createNewSlideData());
-      draftState.currentSlideIndex = draftState.slides.length - 1;
-    }));
+    setSlideEditor((state) =>
+      produce(state, (draftState) => {
+        draftState.slides.push(createNewSlideData());
+        draftState.currentSlideIndex = draftState.slides.length - 1;
+      })
+    );
   };
 
   // Actions for state
@@ -56,7 +71,10 @@ const VideoEdit: React.FC = () => {
   };
 
   const setPreviewUrl = (url: string) => {
-    setCurrentSlide((videoEdit) => ({ ...videoEdit, previewVideoObjectUrl: url }));
+    setCurrentSlide((videoEdit) => ({
+      ...videoEdit,
+      previewVideoObjectUrl: url,
+    }));
   };
 
   const setPreviewCurrentTime = (currentTime: number) => {
@@ -83,7 +101,9 @@ const VideoEdit: React.FC = () => {
     });
   };
 
-  const handlePreviewTimeUpdate: ChangeEventHandler<HTMLVideoElement> = (event) => {
+  const handlePreviewTimeUpdate: ChangeEventHandler<HTMLVideoElement> = (
+    event
+  ) => {
     setPreviewCurrentTime(event.currentTarget.currentTime);
   };
 
@@ -94,13 +114,17 @@ const VideoEdit: React.FC = () => {
           <button
             key={id}
             style={{ color: index === currentSlideIndex ? 'red' : '#aaa' }}
-            onClick={() => { setCurrentSlideIndex(index); }}
+            onClick={() => {
+              setCurrentSlideIndex(index);
+            }}
           >
             {index}
           </button>
         ))}
         <button
-          onClick={() => { addDefaultSlideToLast(); }}
+          onClick={() => {
+            addDefaultSlideToLast();
+          }}
         >
           +
         </button>
@@ -115,72 +139,31 @@ const VideoEdit: React.FC = () => {
         })}
       </EditorContainer>
       <VideoContainer>
-        <CameraVideo
-          ref={videoRefCallback}
+        <CameraVideo ref={videoRefCallback}
           autoPlay
           controls={false}
           muted
         />
-        {!currentSlide.isRecording
-          ? <RecordButton onClick={handleStartClick}>start recording</RecordButton>
-          : <RecordButton onClick={handleStopClick}>stop recording</RecordButton>}
-        {currentSlide.previewVideoObjectUrl && <div>
-          <h2>Record Preview</h2>
-          <PreviewVideo
-            onTimeUpdate={handlePreviewTimeUpdate}
-            src={currentSlide.previewVideoObjectUrl}
-            controls
-            width="250"
-          />
-        </div>}
+        {!currentSlide.isRecording ? (
+          <RecordButton onClick={handleStartClick}>
+            start recording
+          </RecordButton>
+        ) : (
+          <RecordButton onClick={handleStopClick}>stop recording</RecordButton>
+        )}
+        {currentSlide.previewVideoObjectUrl && (
+          <div>
+            <h2>Record Preview</h2>
+            <PreviewVideo
+              onTimeUpdate={handlePreviewTimeUpdate}
+              src={currentSlide.previewVideoObjectUrl}
+              controls
+              width="250"
+            />
+          </div>
+        )}
       </VideoContainer>
-    </Scaffold>);
-
-};
-
-const Slide: React.FC<{ slideIndex: number; selected?: boolean }> = ({ slideIndex, selected }) => {
-  const editorData = useRecoilValue(editorTextDataState(slideIndex));
-  const previewSelectionData = useRecoilValue(editorPreviewHighlightState(slideIndex));
-
-  const [currentSlide, setCurrentSlide] = useRecoilState(slideState(slideIndex));
-
-  const addTextChange = useCallback<(data: OutputData) => void>((textData: OutputData) => {
-    setCurrentSlide((state) => produce(state, (draftState) => {
-      draftState.changes.push({ data: textData, videoTimestamp: (new Date().getTime() - currentSlide.recordingStartedAt) / 1000 });
-    }));
-  }, [currentSlide.recordingStartedAt, setCurrentSlide]);
-
-  // TODO: Node기반 position으로 바꾸어 responsive하게 동작하게 만들기 
-  const addSelectionChange = (rects?: EditorTextSelection[]) => {
-    setCurrentSlide((state) => produce(state, (draftState) => {
-      draftState.selectionChanges.push({ data: rects, videoTimestamp: (new Date().getTime() - currentSlide.recordingStartedAt) / 1000 });
-    }));
-  };
-
-  const handleTextDataChange = useCallback<(data: OutputData) => void>(
-    (textData) => {
-      if (!currentSlide.isRecording) {
-        return;
-      }
-      addTextChange(textData);
-    }, [addTextChange, currentSlide.isRecording]);
-
-  const handleSelectionChange = (rects?: EditorTextSelection[]) => {
-    if (!currentSlide.isRecording) {
-      return;
-    }
-    addSelectionChange(rects);
-  };
-
-  return (
-    <div style={{ backgroundColor: selected ? 'yellow' : undefined }}>
-      <Editor
-        data={editorData}
-        onChange={handleTextDataChange}
-        selection={previewSelectionData}
-        onSelectionChange={handleSelectionChange}
-      />
-    </div>
+    </Scaffold>
   );
 };
 
@@ -189,143 +172,3 @@ export default () => (
     <VideoEdit />
   </RecoilRoot>
 );
-
-interface SlideEditorState {
-  currentSlideIndex: number;
-  slides: SlideState[];
-  // 아직 안씀
-  editingState: EditingState;
-}
-
-// TODO: 학생이 강의 재생하고 강사는 녹화하고 자료 수정하고 세 작업을 하려면 아래 플래그가 필요함
-// Recording에서만 change 기록 및 비디오 녹화
-// Editing에서만 originalEditorData를 변경할 수 있게
-// Previewing에서는 녹화한 강의 재생만 (contenteditable=false)
-enum EditingState {
-  Recording,
-  Editing,
-  Previewing,
-}
-
-interface SlideState {
-  id: string;
-  originalEditorData: OutputData;
-  changes: TextDataChange[];
-  selectionChanges: TextSelectionChange[];
-  isRecording: boolean;
-  recordingStartedAt: number;
-  previewVideoObjectUrl?: string;
-  previewCurrentTime: number;
-}
-
-interface TextDataChange {
-  data: OutputData;
-  videoTimestamp: number;
-}
-
-interface TextSelectionChange {
-  data?: EditorTextSelection[];
-  videoTimestamp: number;
-}
-
-const initialData: OutputData = { 'time': 1595009894317, 'blocks': [{ 'type': 'header', 'data': { 'text': '새로운 강의 방식을 만들고 있어요.', 'level': 2 } }, { 'type': 'paragraph', 'data': { 'text': '노션처럼 쉬운 블록 기반 에디터와 중요한 정보를 효과적으로 알릴 수 있는 포맷팅 타임라인 기능.<br>웹에서 비디오 녹화까지.' } }, { 'type': 'paragraph', 'data': { 'text': '쉽게 제작하고, 효율적으로 온라인 강의를 체험해보세요' } }], 'version': '2.18.0' };
-
-const defaultSlideData: SlideState = {
-  id: '0',
-  originalEditorData: initialData,
-  changes: [],
-  selectionChanges: [],
-  isRecording: false,
-  recordingStartedAt: 0,
-  previewVideoObjectUrl: undefined,
-  previewCurrentTime: 0,
-};
-
-let idCounter = 10;
-
-const createNewSlideData = () => {
-  idCounter++;
-  return Object.assign({ id: String(idCounter) }, defaultSlideData);
-};
-
-const slideEditorState = atom<SlideEditorState>({
-  key: 'slideEditorState',
-  default: {
-    currentSlideIndex: 0,
-    slides: [createNewSlideData(), createNewSlideData()],
-    editingState: EditingState.Editing
-  },
-});
-
-const slideState = selectorFamily<SlideState, number>({
-  key: 'slideState',
-  get: slideIndex => ({ get }) => {
-    const slideEditor = get(slideEditorState);
-    return slideEditor.slides[slideIndex];
-  },
-  set: slideIndex => ({ get, set }, newValue) => {
-    set(slideEditorState, produce(get(slideEditorState), draftState => {
-      if (newValue instanceof DefaultValue) {
-        draftState.slides[slideIndex] = defaultSlideData;
-        return;
-      }
-      draftState.slides[slideIndex] = newValue;
-    }));
-  },
-});
-
-const latestTextChangeState = selectorFamily<OutputData, number>({
-  key: 'latestTextChangeState',
-  get: slideIndex => ({ get }) => {
-    const videoEdit = get(slideState(slideIndex));
-    const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime;
-    const latestChangeBeforeCurrentTime = videoEdit.changes.filter(isChangeBeforeCurrentTime).slice(-1);
-    // 최근 수정 사항이 없으면 첫 text로 시작함
-    return (latestChangeBeforeCurrentTime.length > 0 ? latestChangeBeforeCurrentTime[0].data : videoEdit.originalEditorData);
-  },
-});
-
-const editorTextDataState = selectorFamily<OutputData | undefined, number>({
-  key: 'editorTextDataState',
-  get: slideIndex => ({ get }) => {
-    const videoEdit = get(slideState(slideIndex));
-    // NO CONTROL WHEN ENABLED WRITING
-    if (videoEdit.isRecording) {
-      return;
-    }
-    // CONTROL
-    return get(latestTextChangeState(slideIndex));
-  },
-});
-
-const editorPreviewHighlightState = selectorFamily<EditorTextSelection[] | undefined, number>({
-  key: 'editorPreviewHighlightState',
-  get: slideIndex => ({ get }) => {
-    const videoEdit = get(slideState(slideIndex));
-    // NO CONTROL WHEN ENABLED WRITING
-    if (videoEdit.isRecording) {
-      return;
-    }
-
-    const isChangeBeforeCurrentTime = (change: TextSelectionChange) => change.videoTimestamp <= videoEdit.previewCurrentTime;
-    const latestChangeBeforeCurrentTime = videoEdit.selectionChanges.filter(isChangeBeforeCurrentTime).slice(-1);
-    return (latestChangeBeforeCurrentTime.length > 0 ? latestChangeBeforeCurrentTime[0].data : undefined);
-  },
-});
-
-const uploadVideoToServer = (video: Blob) => {
-  const formData = new FormData();
-  formData.append('video', video);
-  return axios.post('http://10.10.20.230:3001/upload-video', formData);
-};
-
-const getCameraMirrorRefCallback = () => {
-  return useCallback<(el: HTMLVideoElement) => void>((el) => {
-    navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
-      if (el === null) {
-        return;
-      }
-      el.srcObject = stream;
-    });
-  }, []);
-};
