@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {ChangeEventHandler, useCallback, useEffect, useRef} from 'react';
 import RecordRTC from 'recordrtc';
 import axios from 'axios';
 
@@ -11,12 +11,24 @@ import {OutputData} from '@editorjs/editorjs';
 
 const VideoEdit: React.FC = () => {
 
+  const videoRefCallback = getCameraMirrorRefCallback();
+
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
+      recorder = new RecordRTC(stream, {type: 'video', video: {width: 1920, height: 1080}});
+    });
+  }, []);
+
   const [videoEdit, setVideoEdit] = useRecoilState(videoEditState);
+  const editorData = useRecoilValue(editorTextDataState);
+
+  // a state observer for debugging
   useEffect(() => {
     console.log('ATOM', videoEdit);
   }, [videoEdit]);
 
-  const resetRecording = () => {
+  // Actions for state
+  const resetAndStartRecording = () => {
     setVideoEdit((state) => ({
       ...state,
       changes: [],
@@ -43,35 +55,17 @@ const VideoEdit: React.FC = () => {
     setVideoEdit((videoEdit) => ({...videoEdit, previewVideoObjectUrl: url}));
   };
 
-  const moveChangeIndex = (delta: number) => {
-    setVideoEdit((state) => {
-      const nextIndex = state.viewingChangeIndex + delta;
-      if (!(nextIndex >= -1 && nextIndex < state.changes.length)) {
-        return state;
-      }
-      return ({...state, viewingChangeIndex: state.viewingChangeIndex + delta});
-    });
-  };
-
   const setPreviewCurrentTime = (currentTime: number) => {
     setVideoEdit((state) => ({...state, previewCurrentTime: currentTime}));
   };
 
-  const videoRefCallback = getCameraMirrorRefCallback();
-
-  useEffect(() => {
-    navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
-      recorder = new RecordRTC(stream, {type: 'video', video: {width: 1920, height: 1080}});
-    });
-  }, []);
-
+  // Handlers
   const handleStartClick = () => {
-    // TODO: 예전 텍스트로 리셋하기
     if (videoEdit.isRecording) {
       return;
     }
     setIsRecording(true);
-    resetRecording();
+    resetAndStartRecording();
     recorder.startRecording();
   };
 
@@ -93,39 +87,47 @@ const VideoEdit: React.FC = () => {
       addTextChange(textData);
     }, [addTextChange, videoEdit.isRecording]);
 
-  return <Scaffold>
-    <EditorContainer>
-      <Editor
-        data={useRecoilValue(editorTextDataState)}
-        onChange={handleTextDataChange}
-      />
-    </EditorContainer>
-    <VideoContainer>
-      <CameraVideo
-        ref={videoRefCallback}
-        autoPlay
-        controls={false}
-        muted
-      />
-      {!videoEdit.isRecording
-        ? <RecordButton onClick={handleStartClick}>start recording</RecordButton>
-        : <RecordButton onClick={handleStopClick}>stop recording</RecordButton>}
-      {videoEdit.previewVideoObjectUrl && <div>
-        <h2>Record Preview</h2>
-        <PreviewVideo
-          onTimeUpdate={(event) => {
-            setPreviewCurrentTime(event.currentTarget.currentTime);
-          }}
-          src={videoEdit.previewVideoObjectUrl}
-          controls
-          width="250"
+  const handlePreviewTimeUpdate: ChangeEventHandler<HTMLVideoElement> = (event) => {
+    setPreviewCurrentTime(event.currentTarget.currentTime);
+  };
+
+  return (
+    <Scaffold>
+      <EditorContainer>
+        <Editor
+          data={editorData}
+          onChange={handleTextDataChange}
         />
-      </div>}
-    </VideoContainer>
-  </Scaffold>;
+      </EditorContainer>
+      <VideoContainer>
+        <CameraVideo
+          ref={videoRefCallback}
+          autoPlay
+          controls={false}
+          muted
+        />
+        {!videoEdit.isRecording
+          ? <RecordButton onClick={handleStartClick}>start recording</RecordButton>
+          : <RecordButton onClick={handleStopClick}>stop recording</RecordButton>}
+        {videoEdit.previewVideoObjectUrl && <div>
+          <h2>Record Preview</h2>
+          <PreviewVideo
+            onTimeUpdate={handlePreviewTimeUpdate}
+            src={videoEdit.previewVideoObjectUrl}
+            controls
+            width="250"
+          />
+        </div>}
+      </VideoContainer>
+    </Scaffold>);
+
 };
 
-export default () => <RecoilRoot><VideoEdit/></RecoilRoot>;
+export default () => (
+  <RecoilRoot>
+    <VideoEdit/>
+  </RecoilRoot>
+);
 
 const Scaffold = styled.div`
   font-family: 'SpoqaHanSans';
@@ -162,7 +164,6 @@ const RecordButton = styled.button`
 interface State {
   originalEditorData: any;
   changes: TextDataChange[];
-  viewingChangeIndex: number;
   isRecording: boolean;
   recordingStartedAt: number;
   previewVideoObjectUrl?: string;
@@ -179,7 +180,6 @@ const videoEditState = atom<State>({
   default: {
     originalEditorData: {'time':1595009894317,'blocks':[{'type':'header','data':{'text':'새로운 강의 방식을 만들고 있어요.','level':2}},{'type':'paragraph','data':{'text':'노션처럼 쉬운 블록 기반 에디터와 중요한 정보를 효과적으로 알릴 수 있는 포맷팅 타임라인 기능.<br>웹에서 비디오 녹화까지.'}},{'type':'paragraph','data':{'text':'쉽게 제작하고, 효율적으로 온라인 강의를 체험해보세요'}}],'version':'2.18.0'},
     changes: [],
-    viewingChangeIndex: -1,
     isRecording: false,
     recordingStartedAt: 0,
     previewVideoObjectUrl: undefined,
