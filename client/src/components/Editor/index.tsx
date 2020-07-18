@@ -55,7 +55,7 @@ const Editor: React.FC<EditorProps> = ({data, onChange}) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       editorRef.current?.isReady.then(() => editorRef.current?.save()).then(data => {
-        onChange(data);
+        data && onChange(data);
       });
     }, 100);
 
