@@ -6,6 +6,7 @@ import Underline from '@editorjs/underline';
 import Marker from '@editorjs/marker';
 import QuizBlockPlugin from './QuizBlock/plugin';
 import EditorWrapper from '@src/styles/EditorWrapper';
+import styled from 'styled-components';
 
 const editorJsConfig: EditorConfig = {
   onChange: (change) => { console.log('editorJS', change); },
@@ -125,7 +126,11 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
   };
 
   const renderHighlight = (textSelection: EditorTextSelection) => {
-    return <div style={{ position: 'absolute', left: textSelection.x, top: textSelection.y, width: textSelection.width, height: textSelection.height, backgroundColor: 'red' }}>highlight</div>;
+    const rectStyle = { left: textSelection.x, top: textSelection.y, width: textSelection.width, height: textSelection.height };
+    if (textSelection.width === 0) {
+      return <Caret style={{ ...rectStyle, width: 3 }}/>;
+    }
+    return <LineSelection style={rectStyle} />;
   };
 
   return <div>
@@ -150,5 +155,17 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
     </button>
   </div>;
 };
+
+const Caret = styled.div`
+  position: absolute;
+  background-color: red;
+`;
+
+const LineSelection = styled.div`
+  position: absolute;
+  background-color: red;
+  opacity: 0.5;
+`;
+
 
 export default Editor;
