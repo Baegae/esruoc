@@ -41,7 +41,7 @@ export function getDownloadUrl(filePath: string): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     storageFile.getSignedUrl({
       action: 'read',
-      expires: currentTime.setHours(currentTime.getHours() + 1)
+      expires: currentTime.setHours(currentTime.getHours() + 2)
     }, (err, url) => {
       if (err != null) {
         reject(err);
