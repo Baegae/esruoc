@@ -179,9 +179,14 @@ export default () => (
 interface SlideEditorState {
   currentSlideIndex: number;
   slides: SlideState[];
+  // 아직 안씀
   editingState: EditingState;
 }
 
+// TODO:
+// Recording에서 change 기록 및 비디오 녹화
+// Editing에서 originalEditorData를 변경할 수 있게
+// Previewing에서 녹화한 강의 재생 (contenteditable=false)
 enum EditingState {
   Recording,
   Editing,
