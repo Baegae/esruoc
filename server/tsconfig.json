@@ -16,9 +16,6 @@
       ],
       "@business/*": [
         "business/*"
-      ],
-      "@shared/*": [
-        "../shared/src/*"
       ]
     }
   },

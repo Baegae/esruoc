@@ -8,6 +8,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "firebase-admin": "^9.0.0",
     "mongoose": "^5.9.24",
     "multer": "^1.4.2",
     "reflect-metadata": "^0.1.13",
@@ -17,13 +18,20 @@
     "@types/mongoose": "^5.7.31",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.12.2",
+    "link-module-alias": "^1.2.0",
+    "module-alias": "^2.2.2",
     "nodemon": "^2.0.4",
     "ts-node": "^8.10.2",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.6"
   },
   "scripts": {
+    "postinstall": "link-module-alias",
+    "preinstall": "command -v link-module-alias && link-module-alias clean || true",
     "start": "nodemon",
     "lint": "eslint **/*.ts"
+  },
+  "_moduleAliases": {
+    "@shared": "../shared/src"
   }
 }
