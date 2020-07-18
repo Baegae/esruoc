@@ -19,7 +19,7 @@ const VideoEdit: React.FC = () => {
     });
   }, []);
 
-  const [slideEditor] = useRecoilState(slideEditorState);
+  const [slideEditor, setSlideEditor] = useRecoilState(slideEditorState);
   const { currentSlideIndex } = slideEditor;
   const [currentSlide, setCurrentSlide] = useRecoilState(getSlideState(currentSlideIndex));
 
@@ -27,6 +27,10 @@ const VideoEdit: React.FC = () => {
   useEffect(() => {
     console.log('ATOM', currentSlide);
   }, [currentSlide]);
+
+  const setCurrentSlideIndex = (index: number) => {
+    setSlideEditor({ ...slideEditor, currentSlideIndex: index });
+  };
 
   // Actions for state
   const resetAndStartRecording = () => {
@@ -79,11 +83,23 @@ const VideoEdit: React.FC = () => {
   return (
     <Scaffold>
       <EditorContainer>
-        {slideEditor.slides.map((_, index) => (
-          <Slide key={index}
-            slideIndex={index}
-          />
-        ))}
+        {slideEditor.slides.map((_, index) => (<button key={index} onClick={() => { setCurrentSlideIndex(index); }}>{index}</button>))}
+        {slideEditor.slides.map((_, index) => {
+          if (index === currentSlideIndex) {
+            return (
+              <div style={{ backgroundColor: 'yellow' }}>
+                <Slide key={index}
+                  slideIndex={index}
+                />
+              </div>
+            );
+          }
+          return (
+            <Slide key={index}
+              slideIndex={index}
+            />
+          );
+        })}
       </EditorContainer>
       <VideoContainer>
         <CameraVideo
@@ -207,7 +223,7 @@ const slideEditorState = atom<SlideEditorState>({
   key: 'slideEditorState',
   default: {
     currentSlideIndex: 0,
-    slides: [defaultSlideData],
+    slides: [defaultSlideData, defaultSlideData],
     editingState: EditingState.Editing
   },
 });
