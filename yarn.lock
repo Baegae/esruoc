@@ -3373,6 +3373,13 @@ ecdsa-sig-formatter@1.0.11, ecdsa-sig-formatter@^1.0.11:
   dependencies:
     safe-buffer "^5.0.1"
 
+editorjs-drag-drop@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/editorjs-drag-drop/-/editorjs-drag-drop-0.1.0.tgz#3637b45a9c4cdef30c8bec0ded3af96d34e436ee"
+  integrity sha512-4oO7SeonDdmY8iHCcL4D8ljfaE6Ys0A8bmKjVCMH4F4ZfTYn9nHprpr/O/pl15Kpailm7aenK/X1XjQYxGAu8g==
+  dependencies:
+    axios "^0.19.2"
+
 ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
