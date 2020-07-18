@@ -1,6 +1,7 @@
 import React, { ChangeEventHandler, useCallback, useEffect } from 'react';
 import RecordRTC from 'recordrtc';
 import axios from 'axios';
+import produce from 'immer';
 import Editor, { EditorTextSelection } from '../Editor';
 import { atom, RecoilRoot, selector, useRecoilState, useRecoilValue } from 'recoil/dist';
 import { OutputData } from '@editorjs/editorjs';
@@ -39,19 +40,16 @@ const VideoEdit: React.FC = () => {
   };
 
   const addTextChange = (textData: OutputData) => {
-    setVideoEdit((videoEdit) => ({
-      ...videoEdit,
-      // originalEditorData,
-      changes: [...videoEdit.changes, { data: textData, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 }]
+    setVideoEdit((state) => produce(state, (draftState) => {
+      draftState.changes.push({ data: textData, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 });
     }));
   };
 
   // // TODO: Changes encoding through coordinate to 
   const addSelectionChange = (rects?: EditorTextSelection[]) => {
-    // if (rects) {
-
-    // }
-    // console.log('SELECTION CHANGE', rects);
+    setVideoEdit((state) => produce(state, (draftState) => {
+      draftState.selectionChanges.push({ data: rects, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 });
+    }));
   };
 
   const setIsRecording = (isRecording: boolean) => {
@@ -94,13 +92,11 @@ const VideoEdit: React.FC = () => {
       addTextChange(textData);
     }, [addTextChange, videoEdit.isRecording]);
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const handleSelectionChange = (rects?: EditorTextSelection[]) => {
-    if (rects) {
-      console.log('in', rects);
-    } else {
-      console.log('out');
+    if (!videoEdit.isRecording) {
+      return;
     }
+    addSelectionChange(rects);
   };
 
   const handlePreviewTimeUpdate: ChangeEventHandler<HTMLVideoElement> = (event) => {
@@ -162,7 +158,7 @@ interface TextDataChange {
 }
 
 interface TextSelectionChange {
-  data: EditorTextSelection[];
+  data?: EditorTextSelection[];
   videoTimestamp: number;
 }
 
