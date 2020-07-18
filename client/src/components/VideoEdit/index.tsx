@@ -1,13 +1,12 @@
-import React, {ChangeEventHandler, useCallback, useEffect, useRef} from 'react';
+import React, {ChangeEventHandler, useCallback, useEffect} from 'react';
 import RecordRTC from 'recordrtc';
 import axios from 'axios';
+import Editor from '../Editor';
+import {atom, RecoilRoot, selector, useRecoilState, useRecoilValue} from 'recoil/dist';
+import {OutputData} from '@editorjs/editorjs';
+import {CameraVideo, EditorContainer, PreviewVideo, RecordButton, Scaffold, VideoContainer} from './styles';
 
 let recorder: RecordRTC;
-
-import styled from 'styled-components';
-import Editor from '../Editor';
-import {RecoilRoot, atom, useRecoilState, selector, useRecoilValue} from 'recoil/dist';
-import {OutputData} from '@editorjs/editorjs';
 
 const VideoEdit: React.FC = () => {
 
@@ -128,38 +127,6 @@ export default () => (
     <VideoEdit/>
   </RecoilRoot>
 );
-
-const Scaffold = styled.div`
-  font-family: 'SpoqaHanSans';
-
-  display: flex;
-  flex-direction: row;
-`;
-
-const VideoContainer = styled.div`
-  flex: 1;
-  max-width: 30rem;
-  
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-`;
-
-const CameraVideo = styled.video`
-  transform: scaleX(-1);
-`;
-
-const PreviewVideo = styled.video`
-  transform: scaleX(-1);
-`;
-
-const EditorContainer = styled.div`
-  flex: 1;
-`;
-
-const RecordButton = styled.button`
-  font-size: 2rem;
-`;
 
 interface State {
   originalEditorData: any;
