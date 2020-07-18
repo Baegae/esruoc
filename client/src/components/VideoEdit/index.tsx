@@ -190,12 +190,15 @@ const videoEditState = atom<State>({
   },
 });
 
-const previewTextChangeIndexState = selector({
-  key: 'previewTextChangeIndexState',
+const latestTextChangeState = selector({
+  key: 'latestTextChangeState',
   get: ({get}) => {
     const videoEdit = get(videoEditState);
-    const index = [...videoEdit.changes].reverse().findIndex((textChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime);
-    return index === -1 ? -1 : videoEdit.changes.length - index - 1;
+    const changesBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime;
+    const latestChangeIndexReversed = [...videoEdit.changes].reverse().findIndex(changesBeforeCurrentTime);
+    const latestChangeIndex = latestChangeIndexReversed === -1 ? -1 : videoEdit.changes.length - latestChangeIndexReversed - 1;
+    // 최근 수정 사항이 없으면 첫 text로 시작함
+    return (latestChangeIndex >= 0 ? videoEdit.changes[latestChangeIndex].data : videoEdit.originalEditorData);
   },
 });
 
@@ -208,8 +211,7 @@ const editorTextDataState = selector({
       return;
     }
     // CONTROL
-    const previewTextChangeIndex = get(previewTextChangeIndexState);
-    return (previewTextChangeIndex >= 0 ? videoEdit.changes[previewTextChangeIndex].data : videoEdit.originalEditorData);
+    return get(latestTextChangeState);
   },
 });
 
