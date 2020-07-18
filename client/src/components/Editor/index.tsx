@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, ChangeEventHandler, useState} from 'react';
-import EditorJS, {EditorConfig, OutputData} from '@editorjs/editorjs';
+import React, { useEffect, useRef, ChangeEventHandler, useState, useCallback } from 'react';
+import EditorJS, { EditorConfig, OutputData, LogLevels } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Underline from '@editorjs/underline';
@@ -8,7 +8,8 @@ import QuizBlockPlugin from './QuizBlock/plugin';
 import EditorWrapper from '@src/styles/EditorWrapper';
 
 const editorJsConfig: EditorConfig = {
-  onChange: console.log,
+  onChange: (change) => { console.log('editorJS', change); },
+  logLevel: 'WARN' as LogLevels.WARN,
   holder: 'editor',
   tools: {
     header: Header,
@@ -29,19 +30,53 @@ const editorJsConfig: EditorConfig = {
   },
 };
 
-
 interface EditorProps {
   data?: OutputData;
   onChange: (data: OutputData) => void;
+  onSelectionChange: (rectList?: EditorTextSelection[]) => void;
 }
 
-const Editor: React.FC<EditorProps> = ({data, onChange}) => {
+export interface EditorTextSelection {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+const getNumRange = (n: number) => [...Array(n)].map((_, index) => index);
+
+const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange }) => {
   const editorRef = useRef<EditorJS | null>(null);
 
   useEffect(() => {
-    editorRef.current = new EditorJS(Object.assign({}, editorJsConfig, {data}));
+    editorRef.current = new EditorJS(Object.assign({}, editorJsConfig, { data }));
     // new EditorJS({...editorJsConfig, holder: 'editor9'});
   }, []);
+
+  const editorElRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const listener = () => {
+      const selection = document.getSelection();
+      if (!selection || !editorElRef.current) return;
+      const range = selection.getRangeAt(0);
+      if (range.intersectsNode(editorElRef.current)) {
+        console.log('SELECTION CHANGE', selection);
+        const rects = range.getClientRects();
+        onSelectionChange(
+          getNumRange(rects.length)
+            .map((index) => rects[index])
+            .map(rect => ({ x: rect.x, y: rect.y, width: rect.width, height: rect.height }))
+        );
+      } else {
+        console.log('SELECTION OUT', selection);
+        onSelectionChange(undefined);
+      }
+    };
+    document.addEventListener('selectionchange', listener);
+    return () => {
+      document.removeEventListener('selectionchange', listener);
+    };
+  }, [onSelectionChange]);
 
   useEffect(() => {
     if (!data) {
@@ -58,7 +93,7 @@ const Editor: React.FC<EditorProps> = ({data, onChange}) => {
       editorRef.current?.isReady.then(() => editorRef.current?.save()).then(data => {
         data && onChange(data);
       });
-    }, 100);
+    }, 1000);
 
     return () => {
       clearInterval(intervalId);
@@ -85,7 +120,11 @@ const Editor: React.FC<EditorProps> = ({data, onChange}) => {
 
   return <div>
     <EditorWrapper>
-      <div id="editor" />
+
+      <div id="editor"
+        ref={editorElRef}
+      >
+      </div>
     </EditorWrapper>
     <button onClick={handleLoad}>
       load
