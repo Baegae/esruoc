@@ -31,7 +31,7 @@ export function uploadFileToStorage(path: string, fileName: string, file: any): 
   });
 }
 
-export function getDownloadUrl(filePath: string): Promise<string> {
+export function getSignedUrl(filePath: string): Promise<string> {
   const storage = admin.storage().bucket();
 
   const currentTime = new Date();
@@ -42,6 +42,25 @@ export function getDownloadUrl(filePath: string): Promise<string> {
     storageFile.getSignedUrl({
       action: 'read',
       expires: currentTime.setHours(currentTime.getHours() + 2)
+    }, (err, url) => {
+      if (err != null) {
+        reject(err);
+      } else {
+        resolve(url);
+      }
+    });
+  });
+}
+
+export function getUnsignedUrl(filePath: string): Promise<string> {
+  const storage = admin.storage().bucket();
+
+  const storageFile = storage.file(filePath);
+
+  return new Promise<string>((resolve, reject) => {
+    storageFile.getSignedUrl({
+      action: 'read',
+      expires: '12-31-2021'
     }, (err, url) => {
       if (err != null) {
         reject(err);
