@@ -32,6 +32,13 @@ const VideoEdit: React.FC = () => {
     setSlideEditor({ ...slideEditor, currentSlideIndex: index });
   };
 
+  const addDefaultSlideToLast = () => {
+    setSlideEditor((state) => produce(state, draftState => {
+      draftState.slides.push(createNewSlideData());
+      draftState.currentSlideIndex = draftState.slides.length - 1;
+    }));
+  };
+
   // Actions for state
   const resetAndStartRecording = () => {
     setCurrentSlide((state) => ({
@@ -84,12 +91,19 @@ const VideoEdit: React.FC = () => {
     <Scaffold>
       <EditorContainer>
         {slideEditor.slides.map(({ id }, index) => (
-          <button key={id}
+          <button
+            key={id}
+            style={{ color: index === currentSlideIndex ? 'red' : '#aaa' }}
             onClick={() => { setCurrentSlideIndex(index); }}
           >
             {index}
           </button>
         ))}
+        <button
+          onClick={() => { addDefaultSlideToLast(); }}
+        >
+          +
+        </button>
         {slideEditor.slides.map(({ id }, index) => {
           return (
             <Slide
@@ -227,11 +241,18 @@ const defaultSlideData: SlideState = {
   previewCurrentTime: 0,
 };
 
+let idCounter = 10;
+
+const createNewSlideData = () => {
+  idCounter++;
+  return Object.assign({ id: String(idCounter) }, defaultSlideData);
+};
+
 const slideEditorState = atom<SlideEditorState>({
   key: 'slideEditorState',
   default: {
     currentSlideIndex: 0,
-    slides: [defaultSlideData, Object.assign({ id: '1' }, defaultSlideData)],
+    slides: [createNewSlideData(), createNewSlideData()],
     editingState: EditingState.Editing
   },
 });
