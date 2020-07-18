@@ -5,7 +5,7 @@ Content-Type: multipart/form-data; boundary=boundary
 --boundary
 Content-Disposition: form-data; name="title";
 
-"강의 제목 1"
+강의 제목 1
 
 --boundary
 Content-Disposition: form-data; name="description";
@@ -14,6 +14,7 @@ Content-Disposition: form-data; name="description";
 
 --boundary
 Content-Disposition: form-data; name="lectureMainImage"; filename="mainimage.jpg"
+Content-Type: image/jpg
 
 < /Users/dsa28s/Downloads/IMG_0308.jpg
 
