@@ -2,22 +2,28 @@ import React, { ChangeEventHandler, useEffect } from 'react';
 import RecordRTC from 'recordrtc';
 import { RecoilRoot, useRecoilState } from 'recoil';
 import produce from 'immer';
-import {
-  CameraVideo,
-  EditorContainer,
-  PreviewVideo,
-  RecordButton,
-  Scaffold,
-  VideoContainer,
-} from './styles';
+
 import { getCameraMirrorRefCallback } from './utils';
 import { slideEditorState, createNewSlideData, slideState } from './states';
+
+import * as S from './styles';
 import Slide from './Slide';
 
 let recorder: RecordRTC;
 
 const VideoEdit: React.FC = () => {
+  const [slideEditor, setSlideEditor] = useRecoilState(slideEditorState);
+  const { currentSlideIndex } = slideEditor;
+  const [currentSlide, setCurrentSlide] = useRecoilState(
+    slideState(currentSlideIndex)
+  );
+
   const videoRefCallback = getCameraMirrorRefCallback();
+
+  // a state observer for debugging
+  useEffect(() => {
+    console.log('ATOM', currentSlide);
+  }, [currentSlide]);
 
   useEffect(() => {
     navigator.mediaDevices
@@ -25,27 +31,16 @@ const VideoEdit: React.FC = () => {
       .then((stream) => {
         recorder = new RecordRTC(stream, {
           type: 'video',
-          video: { width: 1920, height: 1080 },
+          video: { width: 1280, height: 720 },
         });
       });
   }, []);
-
-  const [slideEditor, setSlideEditor] = useRecoilState(slideEditorState);
-  const { currentSlideIndex } = slideEditor;
-  const [currentSlide, setCurrentSlide] = useRecoilState(
-    slideState(currentSlideIndex)
-  );
-
-  // a state observer for debugging
-  useEffect(() => {
-    console.log('ATOM', currentSlide);
-  }, [currentSlide]);
 
   const setCurrentSlideIndex = (index: number) => {
     setSlideEditor({ ...slideEditor, currentSlideIndex: index });
   };
 
-  const addDefaultSlideToLast = () => {
+  const addNewSlide = () => {
     setSlideEditor((state) =>
       produce(state, (draftState) => {
         draftState.slides.push(createNewSlideData());
@@ -81,7 +76,6 @@ const VideoEdit: React.FC = () => {
     setCurrentSlide((state) => ({ ...state, previewCurrentTime: currentTime }));
   };
 
-  // Handlers
   const handleStartClick = () => {
     if (currentSlide.isRecording) {
       return;
@@ -108,8 +102,8 @@ const VideoEdit: React.FC = () => {
   };
 
   return (
-    <Scaffold>
-      <EditorContainer>
+    <S.Scaffold>
+      <S.EditorContainer>
         {slideEditor.slides.map(({ id }, index) => (
           <button
             key={id}
@@ -123,7 +117,7 @@ const VideoEdit: React.FC = () => {
         ))}
         <button
           onClick={() => {
-            addDefaultSlideToLast();
+            addNewSlide();
           }}
         >
           +
@@ -137,24 +131,25 @@ const VideoEdit: React.FC = () => {
             />
           );
         })}
-      </EditorContainer>
-      <VideoContainer>
-        <CameraVideo ref={videoRefCallback}
+      </S.EditorContainer>
+      <S.VideoContainer>
+        <S.CameraVideo
+          ref={videoRefCallback}
           autoPlay
           controls={false}
           muted
         />
         {!currentSlide.isRecording ? (
-          <RecordButton onClick={handleStartClick}>
+          <S.RecordButton onClick={handleStartClick}>
             start recording
-          </RecordButton>
+          </S.RecordButton>
         ) : (
-          <RecordButton onClick={handleStopClick}>stop recording</RecordButton>
+          <S.RecordButton onClick={handleStopClick}>stop recording</S.RecordButton>
         )}
         {currentSlide.previewVideoObjectUrl && (
           <div>
             <h2>Record Preview</h2>
-            <PreviewVideo
+            <S.PreviewVideo
               onTimeUpdate={handlePreviewTimeUpdate}
               src={currentSlide.previewVideoObjectUrl}
               controls
@@ -162,8 +157,8 @@ const VideoEdit: React.FC = () => {
             />
           </div>
         )}
-      </VideoContainer>
-    </Scaffold>
+      </S.VideoContainer>
+    </S.Scaffold>
   );
 };
 
