@@ -3,7 +3,7 @@ import RecordRTC from 'recordrtc';
 import axios from 'axios';
 import produce from 'immer';
 import Editor, { EditorTextSelection } from '../Editor';
-import { atom, RecoilRoot, selector, useRecoilState, useRecoilValue } from 'recoil/dist';
+import { atom, RecoilRoot, selector, useRecoilState, useRecoilValue, DefaultValue } from 'recoil/dist';
 import { OutputData } from '@editorjs/editorjs';
 import { CameraVideo, EditorContainer, PreviewVideo, RecordButton, Scaffold, VideoContainer } from './styles';
 
@@ -19,7 +19,7 @@ const VideoEdit: React.FC = () => {
     });
   }, []);
 
-  const [videoEdit, setVideoEdit] = useRecoilState(videoEditState);
+  const [videoEdit, setVideoEdit] = useRecoilState(currentSlideState);
   const editorData = useRecoilValue(editorTextDataState);
   const previewSelectionData = useRecoilValue(editorPreviewHighlightState);
 
@@ -144,6 +144,18 @@ export default () => (
   </RecoilRoot>
 );
 
+interface SlideEditorState {
+  currentSlideIndex: number;
+  slides: SlideState[];
+  editingState: EditingState;
+}
+
+enum EditingState {
+  Recording,
+  Editing,
+  Previewing,
+}
+
 interface SlideState {
   originalEditorData: OutputData;
   changes: TextDataChange[];
@@ -166,23 +178,46 @@ interface TextSelectionChange {
 
 const initialData: OutputData = { 'time': 1595009894317, 'blocks': [{ 'type': 'header', 'data': { 'text': '새로운 강의 방식을 만들고 있어요.', 'level': 2 } }, { 'type': 'paragraph', 'data': { 'text': '노션처럼 쉬운 블록 기반 에디터와 중요한 정보를 효과적으로 알릴 수 있는 포맷팅 타임라인 기능.<br>웹에서 비디오 녹화까지.' } }, { 'type': 'paragraph', 'data': { 'text': '쉽게 제작하고, 효율적으로 온라인 강의를 체험해보세요' } }], 'version': '2.18.0' };
 
-const videoEditState = atom<SlideState>({
-  key: 'videoEditState',
+const defaultSlideData: SlideState = {
+  originalEditorData: initialData,
+  changes: [],
+  selectionChanges: [],
+  isRecording: false,
+  recordingStartedAt: 0,
+  previewVideoObjectUrl: undefined,
+  previewCurrentTime: 0,
+};
+
+const slideEditorState = atom<SlideEditorState>({
+  key: 'slideEditorState',
   default: {
-    originalEditorData: initialData,
-    changes: [],
-    selectionChanges: [],
-    isRecording: false,
-    recordingStartedAt: 0,
-    previewVideoObjectUrl: undefined,
-    previewCurrentTime: 0,
+    currentSlideIndex: 0,
+    slides: [defaultSlideData],
+    editingState: EditingState.Editing
+  },
+});
+
+const currentSlideState = selector<SlideState>({
+  key: 'currentSlideState',
+  get: ({ get }) => {
+    const slideEditor = get(slideEditorState);
+    return slideEditor.slides[slideEditor.currentSlideIndex];
+  },
+  set: ({ get, set }, newValue) => {
+    set(slideEditorState, produce(get(slideEditorState), draftState => {
+      if (newValue instanceof DefaultValue) {
+        draftState.slides[draftState.currentSlideIndex] = defaultSlideData;
+        return;
+      }
+      draftState.slides[draftState.currentSlideIndex] = newValue;
+    }));
   },
 });
 
 const latestTextChangeState = selector<OutputData>({
   key: 'latestTextChangeState',
   get: ({ get }) => {
-    const videoEdit = get(videoEditState);
+    const videoEdit = get(currentSlideState);
     const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime;
     const latestChangeBeforeCurrentTime = videoEdit.changes.filter(isChangeBeforeCurrentTime).slice(-1);
     // 최근 수정 사항이 없으면 첫 text로 시작함
@@ -193,7 +228,7 @@ const latestTextChangeState = selector<OutputData>({
 const editorTextDataState = selector({
   key: 'editorTextDataState',
   get: ({ get }) => {
-    const videoEdit = get(videoEditState);
+    const videoEdit = get(currentSlideState);
     // NO CONTROL WHEN ENABLED WRITING
     if (videoEdit.isRecording) {
       return;
@@ -206,7 +241,7 @@ const editorTextDataState = selector({
 const editorPreviewHighlightState = selector<EditorTextSelection[] | undefined>({
   key: 'editorPreviewHighlightState',
   get: ({ get }) => {
-    const videoEdit = get(videoEditState);
+    const videoEdit = get(currentSlideState);
     // NO CONTROL WHEN ENABLED WRITING
     if (videoEdit.isRecording) {
       return;
