@@ -1,0 +1,17 @@
+# Image 업로드
+POST http://127.0.0.1:8000/uploadFile
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="image"; filename="test.jpg"
+Content-Type: image/png
+
+< /Users/seungjun/Downloads/step2-seungjun.png
+
+--boundary
+
+
+###
+
+# Url로 이미지 업로드
+POST http://127.0.0.1:8000/fetchUrl?url=https://demo-res.cloudinary.com/image/upload/sample.jpg
