@@ -1,7 +1,7 @@
 import Lesson from './Lesson';
-import User from './User';
 
 interface Lecture {
+    _id?: string;
     // 강의 제목
     title: string;
     // 강의 설명
