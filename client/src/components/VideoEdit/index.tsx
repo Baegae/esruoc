@@ -129,7 +129,7 @@ export default () => (
 );
 
 interface State {
-  originalEditorData: any;
+  originalEditorData: OutputData;
   changes: TextDataChange[];
   isRecording: boolean;
   recordingStartedAt: number;
@@ -154,7 +154,7 @@ const videoEditState = atom<State>({
   },
 });
 
-const latestTextChangeState = selector<OutputData | undefined>({
+const latestTextChangeState = selector<OutputData>({
   key: 'latestTextChangeState',
   get: ({get}) => {
     const videoEdit = get(videoEditState);
