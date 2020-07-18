@@ -37,6 +37,10 @@ const paragraphStyle = css`
     font-family: 'KoPub Batang', serif;
     color: ${({theme}) => theme.colors.text.default};
     font-size: 1.375rem;
+    
+    b {
+      color: ${({theme}) => theme.colors.black};
+    }
   }
 `;
 
