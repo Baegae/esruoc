@@ -252,3 +252,6 @@ $RECYCLE.BIN/
 
 # Build directory
 build/
+
+# Firebase credential
+esrouc-firebase-credential.json

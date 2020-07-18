@@ -2,9 +2,12 @@ version: '3'
 
 services:
   dev_lectus:
-    image: docker.pkg.github.com/baegae/lectus/lectus-dev-environment:0.13
+    image: docker.pkg.github.com/baegae/lectus/lectus-dev-environment:0.14
     ports:
     - 3000:3000
     - 8000:8000
+    - 27017:27017
     volumes:
     - .:/lectus
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/lectus/server/credential/esrouc-firebase-credential.json
