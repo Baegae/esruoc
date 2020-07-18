@@ -23,7 +23,6 @@ const fontLoader = ({
   document.head.appendChild(link);
 
   const fontObserver = new FontFaceObserver(fontName);
-  console.log(fontSlug);
   fontObserver.load().then(() => {
     document.documentElement.classList.add(fontLoadedClassName);
   }).catch(console.log);
