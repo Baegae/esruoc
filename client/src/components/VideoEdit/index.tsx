@@ -22,8 +22,6 @@ const VideoEdit: React.FC = () => {
   const [slideEditor] = useRecoilState(slideEditorState);
   const { currentSlideIndex } = slideEditor;
   const [currentSlide, setCurrentSlide] = useRecoilState(getSlideState(currentSlideIndex));
-  const editorData = useRecoilValue(editorTextDataState(currentSlideIndex));
-  const previewSelectionData = useRecoilValue(editorPreviewHighlightState(currentSlideIndex));
 
   // a state observer for debugging
   useEffect(() => {
@@ -39,19 +37,6 @@ const VideoEdit: React.FC = () => {
       recordingStartedAt: new Date().getTime(),
       previewVideoObjectUrl: undefined,
       previewCurrentTime: 0,
-    }));
-  };
-
-  const addTextChange = useCallback<(data: OutputData) => void>((textData: OutputData) => {
-    setCurrentSlide((state) => produce(state, (draftState) => {
-      draftState.changes.push({ data: textData, videoTimestamp: (new Date().getTime() - currentSlide.recordingStartedAt) / 1000 });
-    }));
-  }, [currentSlide.recordingStartedAt, setCurrentSlide]);
-
-  // TODO: Node기반 position으로 바꾸어 responsive하게 동작하게 만들기 
-  const addSelectionChange = (rects?: EditorTextSelection[]) => {
-    setCurrentSlide((state) => produce(state, (draftState) => {
-      draftState.selectionChanges.push({ data: rects, videoTimestamp: (new Date().getTime() - currentSlide.recordingStartedAt) / 1000 });
     }));
   };
 
@@ -87,21 +72,6 @@ const VideoEdit: React.FC = () => {
     });
   };
 
-  const handleTextDataChange = useCallback<(data: OutputData) => void>(
-    (textData) => {
-      if (!currentSlide.isRecording) {
-        return;
-      }
-      addTextChange(textData);
-    }, [addTextChange, currentSlide.isRecording]);
-
-  const handleSelectionChange = (rects?: EditorTextSelection[]) => {
-    if (!currentSlide.isRecording) {
-      return;
-    }
-    addSelectionChange(rects);
-  };
-
   const handlePreviewTimeUpdate: ChangeEventHandler<HTMLVideoElement> = (event) => {
     setPreviewCurrentTime(event.currentTarget.currentTime);
   };
@@ -109,12 +79,11 @@ const VideoEdit: React.FC = () => {
   return (
     <Scaffold>
       <EditorContainer>
-        <Editor
-          data={editorData}
-          onChange={handleTextDataChange}
-          selection={previewSelectionData}
-          onSelectionChange={handleSelectionChange}
-        />
+        {slideEditor.slides.map((_, index) => (
+          <Slide key={index}
+            slideIndex={index}
+          />
+        ))}
       </EditorContainer>
       <VideoContainer>
         <CameraVideo
@@ -138,6 +107,50 @@ const VideoEdit: React.FC = () => {
       </VideoContainer>
     </Scaffold>);
 
+};
+
+const Slide: React.FC<{ slideIndex: number }> = ({ slideIndex }) => {
+  const editorData = useRecoilValue(editorTextDataState(slideIndex));
+  const previewSelectionData = useRecoilValue(editorPreviewHighlightState(slideIndex));
+
+  const [currentSlide, setCurrentSlide] = useRecoilState(getSlideState(slideIndex));
+
+  const addTextChange = useCallback<(data: OutputData) => void>((textData: OutputData) => {
+    setCurrentSlide((state) => produce(state, (draftState) => {
+      draftState.changes.push({ data: textData, videoTimestamp: (new Date().getTime() - currentSlide.recordingStartedAt) / 1000 });
+    }));
+  }, [currentSlide.recordingStartedAt, setCurrentSlide]);
+
+  // TODO: Node기반 position으로 바꾸어 responsive하게 동작하게 만들기 
+  const addSelectionChange = (rects?: EditorTextSelection[]) => {
+    setCurrentSlide((state) => produce(state, (draftState) => {
+      draftState.selectionChanges.push({ data: rects, videoTimestamp: (new Date().getTime() - currentSlide.recordingStartedAt) / 1000 });
+    }));
+  };
+
+  const handleTextDataChange = useCallback<(data: OutputData) => void>(
+    (textData) => {
+      if (!currentSlide.isRecording) {
+        return;
+      }
+      addTextChange(textData);
+    }, [addTextChange, currentSlide.isRecording]);
+
+  const handleSelectionChange = (rects?: EditorTextSelection[]) => {
+    if (!currentSlide.isRecording) {
+      return;
+    }
+    addSelectionChange(rects);
+  };
+
+  return (
+    <Editor
+      data={editorData}
+      onChange={handleTextDataChange}
+      selection={previewSelectionData}
+      onSelectionChange={handleSelectionChange}
+    />
+  );
 };
 
 export default () => (
@@ -198,23 +211,6 @@ const slideEditorState = atom<SlideEditorState>({
     editingState: EditingState.Editing
   },
 });
-
-// const currentSlideState = selector<SlideState>({
-//   key: 'currentSlideState',
-//   get: ({ get }) => {
-//     const slideEditor = get(slideEditorState);
-//     return slideEditor.slides[slideEditor.currentSlideIndex];
-//   },
-//   set: ({ get, set }, newValue) => {
-//     set(slideEditorState, produce(get(slideEditorState), draftState => {
-//       if (newValue instanceof DefaultValue) {
-//         draftState.slides[draftState.currentSlideIndex] = defaultSlideData;
-//         return;
-//       }
-//       draftState.slides[draftState.currentSlideIndex] = newValue;
-//     }));
-//   },
-// });
 
 const getSlideState = selectorFamily<SlideState, number>({
   key: 'currentSlideState',
