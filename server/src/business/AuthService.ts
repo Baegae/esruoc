@@ -1,6 +1,7 @@
 import process from 'process';
 import jwt from 'jsonwebtoken';
 import User from '@shared/entity/User';
+import {UnauthorizedError} from 'routing-controllers';
 
 export function encodeJWT(user: User): string {
   const authKey = process.env.AUTH_KEY;
@@ -16,12 +17,12 @@ export function encodeJWT(user: User): string {
   );
 }
 
-export function verifyJWT(token: string): void {
+export function verifyJWT(token: string): string {
   const authKey = process.env.AUTH_KEY;
-  jwt.verify(token, authKey!);
-}
-
-export function decodeJWT(token: string): string {
-  const decodedMap = jwt.decode(token) as { [key: string]: any };
-  return decodedMap.uid;
+  try {
+    const decodedToken = jwt.verify(token, authKey!) as { [key: string]: any };
+    return decodedToken.uid;
+  } catch (e) {
+    throw new UnauthorizedError('Unauthorized');
+  }
 }
