@@ -6,7 +6,7 @@ import {connect as connectMongoDB} from '@database/Database';
 import {initFirebase} from '@database/Firebase';
 import {LectureController} from '@controller/LectureController';
 import {UserController} from '@controller/UserController';
-import {decodeJWT} from '@business/AuthService';
+import {verifyJWT} from '@business/AuthService';
 import UserRepository from '@repository/UserRepository';
 
 import swaggerConfig from '../swagger.config';
@@ -19,7 +19,7 @@ const app = createExpressServer({
   controllers: [LectureController, UserController],
   currentUserChecker: async (action: Action, value?: any) => {
     const token = action.request.headers['authorization'];
-    const uid = decodeJWT(token);
+    const uid = verifyJWT(token);
     return userRepository.findUserByUid(uid);
   }
 });
