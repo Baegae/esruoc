@@ -1,5 +1,7 @@
 import React from 'react';
 import { Row, Col } from 'react-grid-system';
+import Headroom from 'react-headroom';
+
 import CTAButton from '@src/components/common/CTAButton';
 import FlatButton from '@src/components/common/FlatButton';
 
@@ -17,32 +19,34 @@ const EditorToolBar: React.FC<EditorToolBarProps> = ({
   lectureName = '길범준의 노래방 강의',
 }) => {
   return (
-    <S.ToolbarWrapper fluid>
-      <Row align="center">
-        <Col>
-          <S.TitleWrapper>
-            <S.Symbol />
-            <div>
-              <input
-                type="text"
-                value={name}
-                placeholder="새로운 강의 이름"
-                onChange={onNameChanged}
-                disabled={!onNameChanged}
-              />
-              <p>{lectureName}</p>
-            </div>
-          </S.TitleWrapper>
-        </Col>
-        <Col>
-          <S.ButtonWrapper>
-            <FlatButton>임시저장(?)</FlatButton>
-            <div style={{width: 24}}/>
-            <CTAButton>업로드</CTAButton>
-          </S.ButtonWrapper>
-        </Col>
-      </Row>
-    </S.ToolbarWrapper>
+    <Headroom>
+      <S.ToolbarWrapper fluid>
+        <Row align="center">
+          <Col>
+            <S.TitleWrapper>
+              <S.Symbol />
+              <div>
+                <input
+                  type="text"
+                  value={name}
+                  placeholder="새로운 강의 이름"
+                  onChange={onNameChanged}
+                  disabled={!onNameChanged}
+                />
+                <p>{lectureName}</p>
+              </div>
+            </S.TitleWrapper>
+          </Col>
+          <Col>
+            <S.ButtonWrapper>
+              <FlatButton>임시저장(?)</FlatButton>
+              <div style={{width: 24}}/>
+              <CTAButton>업로드</CTAButton>
+            </S.ButtonWrapper>
+          </Col>
+        </Row>
+      </S.ToolbarWrapper>
+    </Headroom>
   );
 };
 
