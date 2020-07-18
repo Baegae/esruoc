@@ -4,7 +4,7 @@ import UserRepository from '@repository/UserRepository';
 import UserRecord = admin.auth.UserRecord;
 import {UnauthorizedError} from 'routing-controllers';
 import {encodeJWT} from '@business/AuthService';
-import User from '../../../shared/src/entity/User';
+import User from '@shared/entity/User';
 
 export class UserService {
   private userRepository = new UserRepository();
