@@ -1,16 +1,69 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef, useEffect } from 'react';
 import EditorJS, { EditorConfig, OutputData, LogLevels } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Underline from '@editorjs/underline';
 import Marker from '@editorjs/marker';
+import styled from 'styled-components';
 import QuizBlockPlugin from './QuizBlock/plugin';
 import EditorWrapper from '@src/styles/EditorWrapper';
-import styled from 'styled-components';
 
 const editorJsConfig: EditorConfig = {
   onChange: (change) => { console.log('editorJS', change); },
   logLevel: 'WARN' as LogLevels.WARN,
+  i18n: {
+    messages: {
+      ui: {
+        'blockTunes': {
+          'toggler': {
+            'Click to tune': '클릭해서 블록 변경',
+          },
+        },
+        inlineToolbar: {
+          converter: {
+            'Convert to': '변환',
+          },
+        },
+        toolbar: {
+          toolbox: {
+            Add: '추가',
+          },
+        },
+      },
+
+      toolNames: {
+        Text: '텍스트',
+        Heading: '제목',
+        List: '리스트',
+        Link: '링크',
+        Marker: '형광펜',
+        Bold: '굵게',
+        Italic: '기울게',
+        Underline: '밑줄',
+      },
+      tools: {
+        link: {
+          'Add a link': '링크 추가',
+        },
+        stub: {
+          'The block can not be displayed correctly.':
+            '블록 표시 중 문제가 발생했습니다.',
+        },
+      },
+
+      blockTunes: {
+        delete: {
+          Delete: '삭제',
+        },
+        moveUp: {
+          'Move up': '위로 이동',
+        },
+        moveDown: {
+          'Move down': '아래로 이동',
+        },
+      },
+    },
+  },
   tools: {
     header: Header,
     list: List,
@@ -50,9 +103,15 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
   const editorRef = useRef<EditorJS | null>(null);
   const editorElRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    editorRef.current = new EditorJS(Object.assign({}, editorJsConfig, { data, holder: editorElRef.current }));
-    // new EditorJS({...editorJsConfig, holder: 'editor9'});
+  useLayoutEffect(() => {
+    const editor = new EditorJS(
+      Object.assign(
+        {},
+        editorJsConfig,
+        { data, holder: editorElRef.current }
+      )
+    );
+    editorRef.current = editor;
   }, []);
 
   const editorHighlightLayerElRef = useRef<HTMLDivElement>(null);
