@@ -1,7 +1,7 @@
 interface Lesson {
     _id?: string,
     // ID
-    id: string;
+    id?: string;
     // 차시 이름
     title: string;
     // 차시 설명
