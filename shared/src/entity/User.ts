@@ -10,9 +10,9 @@ interface User {
     // 프로필 이미지 url
     profileImageUrl: string;
     // 수강 중인 강의 목록 (학생인 경우)
-    inProgressCourses?: [InProgressLecture];
+    inProgressCourses?: InProgressLecture[];
     // 만든 강의 아이디 (선생님일 경우)
-    uploadedCourses?: [string];
+    uploadedCourses?: string[];
     // 가입 시각
     createdAt: Date;
 }
