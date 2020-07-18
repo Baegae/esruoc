@@ -1,12 +1,15 @@
-import {Controller, Post, Req} from 'routing-controllers';
-import LoginInput from '../../../shared/src/request/LoginInput';
+import {Body, JsonController, Post} from 'routing-controllers';
+import LoginInput from '@shared/request/LoginInput';
+import {UserService} from '@business/UserService';
 
-@Controller()
+@JsonController('/user')
 export class UserController {
 
-  @Post('login')
-  login(@Req() loginInput: LoginInput) {
-    return loginInput.googleAccessToken;
+  private userService: UserService = new UserService()
+
+  @Post('/login')
+  login(@Body() loginInput: LoginInput) {
+    return this.userService.login(loginInput);
   }
 
 }
