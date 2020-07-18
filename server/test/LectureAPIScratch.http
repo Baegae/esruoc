@@ -1,0 +1,20 @@
+# Lecture 생성
+POST http://127.0.0.1:8000/lecture
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="title";
+
+"강의 제목 1"
+
+--boundary
+Content-Disposition: form-data; name="description";
+
+이것은 강의에 대한 설명입니당
+
+--boundary
+Content-Disposition: form-data; name="lectureMainImage"; filename="mainimage.jpg"
+
+< /Users/dsa28s/Downloads/IMG_0308.jpg
+
+--boundary--
