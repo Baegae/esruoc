@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>stop-recording</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="skip-slide" transform="translate(-45.000000, -2.000000)" fill="#000000" fill-rule="nonzero">
+            <g id="stop-recording" transform="translate(45.000000, 2.000000)">
+                <path d="M19,4.5 L15,8.5 L15,5 C15,4.45 14.55,4 14,4 L7.82,4 L19,15.18 L19,4.5 Z M1.27,0 L0,1.27 L2.73,4 L2,4 C1.45,4 1,4.45 1,5 L1,15 C1,15.55 1.45,16 2,16 L14,16 C14.21,16 14.39,15.92 14.54,15.82 L17.73,19 L19,17.73 L1.27,0 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>
