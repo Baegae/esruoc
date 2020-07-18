@@ -10,4 +10,4 @@ services:
     volumes:
     - .:/lectus
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/lectus/server/credential/lectus-ec3f7-firebase-adminsdk-joz0a-0f1e3bb803.json
+      - GOOGLE_APPLICATION_CREDENTIALS=/lectus/server/credential/esrouc-firebase-credential.json
