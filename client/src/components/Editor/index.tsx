@@ -5,6 +5,7 @@ import List from '@editorjs/list';
 import Underline from '@editorjs/underline';
 import Marker from '@editorjs/marker';
 import QuizBlockPlugin from './QuizBlock/plugin';
+import EditorWrapper from '@src/styles/EditorWrapper';
 
 const editorJsConfig: EditorConfig = {
   onChange: console.log,
@@ -83,8 +84,9 @@ const Editor: React.FC<EditorProps> = ({data, onChange}) => {
   };
 
   return <div>
-    <div id="editor">
-    </div>
+    <EditorWrapper>
+      <div id="editor" />
+    </EditorWrapper>
     <button onClick={handleLoad}>
       load
     </button>
