@@ -12,6 +12,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       fontName: 'Spoqa Han Sans',
       href: '/fonts/spoqa-han-sans.css',
     });
+    fontLoader({
+      fontName: 'KoPub Batang',
+      href: '/fonts/kopub-batang.css',
+    });
   }, []);
 
   return (

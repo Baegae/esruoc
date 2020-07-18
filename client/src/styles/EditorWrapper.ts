@@ -34,7 +34,7 @@ const markStyle = css`
 
 const paragraphStyle = css`
   .ce-paragraph {
-    font-family: 'KoPubWorldBatang_Pro', serif;
+    font-family: 'KoPub Batang', serif;
     color: ${({theme}) => theme.colors.text.default};
     font-size: 1.375rem;
   }
