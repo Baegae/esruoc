@@ -154,15 +154,14 @@ const videoEditState = atom<State>({
   },
 });
 
-const latestTextChangeState = selector({
+const latestTextChangeState = selector<OutputData | undefined>({
   key: 'latestTextChangeState',
   get: ({get}) => {
     const videoEdit = get(videoEditState);
-    const changesBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime;
-    const latestChangeIndexReversed = [...videoEdit.changes].reverse().findIndex(changesBeforeCurrentTime);
-    const latestChangeIndex = latestChangeIndexReversed === -1 ? -1 : videoEdit.changes.length - latestChangeIndexReversed - 1;
+    const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime;
+    const latestChangeBeforeCurrentTime = videoEdit.changes.filter(isChangeBeforeCurrentTime).slice(-1);
     // 최근 수정 사항이 없으면 첫 text로 시작함
-    return (latestChangeIndex >= 0 ? videoEdit.changes[latestChangeIndex].data : videoEdit.originalEditorData);
+    return (latestChangeBeforeCurrentTime.length > 0 ? latestChangeBeforeCurrentTime[0].data : videoEdit.originalEditorData);
   },
 });
 
