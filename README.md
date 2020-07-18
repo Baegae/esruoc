@@ -1,5 +1,5 @@
-# lectus
-Lectus! (Lecture + Us!)
+# EMOC
+<b>E</b>asy to <b>M</b>ake <b>O</b>wn <b>C</b>ourse
 
 <br>
 

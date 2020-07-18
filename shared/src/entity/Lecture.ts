@@ -1,14 +1,17 @@
-import Lesson from "./Lesson";
+import Lesson from './Lesson';
+import User from './User';
 
-export interface Lecture {
+interface Lecture {
     // 강의 제목
-    title: string
+    title: string;
     // 강의 설명
-    description: string
+    description: string;
     // 강의자
-    uploadedBy: string
+    uploadedBy: User;
     // 차시 목록
-    lessons: [Lesson]
+    lessons: [Lesson];
     // 대표 이미지 URL
-    mainImageUrl: string
+    mainImageUrl: string;
 }
+
+export default Lecture;
