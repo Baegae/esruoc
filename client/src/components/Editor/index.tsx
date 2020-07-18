@@ -127,7 +127,7 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
           ref={editorElRef}
         >
         </div>
-        {selection && selection.length > 0 && renderHighlight(selection[0])}
+        {selection && selection.length > 0 && selection.map(renderHighlight)}
       </div>
     </EditorWrapper>
   </div>;
