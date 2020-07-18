@@ -1,7 +1,7 @@
 import {BodyParam, JsonController, Param, Post, UploadedFile} from 'routing-controllers';
 import LectureService from '@business/LectureService';
 import CreateLectureResponse from '@shared/response/CreateLectureResponse';
-import CreateLessonResponse from '../../../shared/src/response/CreateLessonResponse';
+import CreateLessonResponse from '@shared/response/CreateLessonResponse';
 
 @JsonController('/lecture')
 export class LectureController {
