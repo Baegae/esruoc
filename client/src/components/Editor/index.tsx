@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, ChangeEventHandler, useState, useCallback, useLayoutEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import EditorJS, { EditorConfig, OutputData, LogLevels } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
@@ -11,7 +11,6 @@ import styled from 'styled-components';
 const editorJsConfig: EditorConfig = {
   onChange: (change) => { console.log('editorJS', change); },
   logLevel: 'WARN' as LogLevels.WARN,
-  holder: 'editor',
   tools: {
     header: Header,
     list: List,
@@ -49,9 +48,10 @@ const getNumRange = (n: number) => [...Array(n)].map((_, index) => index);
 
 const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, selection }) => {
   const editorRef = useRef<EditorJS | null>(null);
+  const editorElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    editorRef.current = new EditorJS(Object.assign({}, editorJsConfig, { data }));
+    editorRef.current = new EditorJS(Object.assign({}, editorJsConfig, { data, holder: editorElRef.current }));
     // new EditorJS({...editorJsConfig, holder: 'editor9'});
   }, []);
 
@@ -110,28 +110,10 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
     };
   }, [onChange]);
 
-  const handleSave = () => {
-    editorRef.current?.isReady.then(() => editorRef.current?.save()).then(data => {
-      console.log('save', data);
-      setText(JSON.stringify(data));
-    });
-  };
-
-  const [text, setText] = useState('');
-
-  const handleChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-    setText(e.target.value);
-  };
-
-  const handleLoad = () => {
-    console.log('loading', text);
-    editorRef.current?.render(JSON.parse(text));
-  };
-
   const renderHighlight = (textSelection: EditorTextSelection) => {
     const rectStyle = { left: textSelection.x, top: textSelection.y, width: textSelection.width, height: textSelection.height };
     if (textSelection.width === 0) {
-      return <Caret style={{ ...rectStyle, width: 3 }}/>;
+      return <Caret style={{ ...rectStyle, width: 3 }} />;
     }
     return <LineSelection style={rectStyle} />;
   };
@@ -141,21 +123,13 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
       <div style={{ position: 'relative' }}
         ref={editorHighlightLayerElRef}
       >
-        <div id="editor">
+        <div id="editor"
+          ref={editorElRef}
+        >
         </div>
         {selection && selection.length > 0 && renderHighlight(selection[0])}
       </div>
     </EditorWrapper>
-    <button onClick={handleLoad}>
-      load
-    </button>
-    <textarea value={text}
-      onChange={handleChange}
-    >
-    </textarea>
-    <button onClick={handleSave}>
-      save
-    </button>
   </div>;
 };
 
