@@ -5,5 +5,4 @@ const VideoEditTest = dynamic(() => import('../src/components/VideoEdit'), {
   ssr: false,
 });
 
-
 export default () => <VideoEditTest />;

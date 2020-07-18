@@ -5,6 +5,7 @@ import theme from '@src/styles/theme';
 import setGridSystem from '@src/styles/setGridSystem';
 import fontLoader from '@src/styles/fontLoader';
 import GlobalStyles from '@src/styles/globalStyles';
+import SEO from '@src/components/common/SEO';
 
 const MyApp: React.FC<AppContext> = ({ Component }) => {
   setGridSystem();
@@ -24,6 +25,7 @@ const MyApp: React.FC<AppContext> = ({ Component }) => {
     <ThemeProvider theme={theme}>
       <>
         <GlobalStyles />
+        <SEO />
         <Component />
       </>
     </ThemeProvider>
