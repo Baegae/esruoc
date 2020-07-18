@@ -7,11 +7,11 @@ interface Lecture {
     // 강의 설명
     description: string;
     // 강의자
-    uploadedBy: User;
+    uploaderId: string;
     // 차시 목록
-    lessons: [Lesson];
+    lessons?: [Lesson];
     // 대표 이미지 URL
-    mainImageUrl: string;
+    mainImageUrl?: string;
 }
 
 export default Lecture;
