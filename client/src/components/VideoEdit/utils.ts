@@ -9,7 +9,7 @@ export const uploadVideoToServer = (video: Blob) => {
   
 export const getCameraMirrorRefCallback = () => {
   return useCallback<(el: HTMLVideoElement) => void>((el) => {
-    navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
+    navigator.mediaDevices.getUserMedia({ audio: true, video: { width: 1280, height: 720 } }).then((stream) => {
       if (el === null) {
         return;
       }

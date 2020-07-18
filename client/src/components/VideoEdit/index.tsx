@@ -8,6 +8,8 @@ import { slideEditorState, createNewSlideData, slideState } from './states';
 
 import * as S from './styles';
 import Slide from './Slide';
+import { Container, Row, Col } from 'react-grid-system';
+import FlatButton from '../common/FlatButton';
 
 let recorder: RecordRTC;
 
@@ -102,63 +104,66 @@ const VideoEdit: React.FC = () => {
   };
 
   return (
-    <S.Scaffold>
-      <S.EditorContainer>
-        {slideEditor.slides.map(({ id }, index) => (
-          <button
-            key={id}
-            style={{ color: index === currentSlideIndex ? 'red' : '#aaa' }}
-            onClick={() => {
-              setCurrentSlideIndex(index);
-            }}
-          >
-            {index}
-          </button>
-        ))}
+    <div style={{ position: 'relative', zIndex: 0 }}>
+      <Container>
+        <Row>
+          <Col sm={9}>
+            {slideEditor.slides.map(({ id }, index) => (
+              <Slide
+                key={id}
+                slideIndex={index}
+                selected={index === currentSlideIndex}
+                onFocused={setCurrentSlideIndex}
+              />
+            ))}
+          </Col>
+          <Col sm={3}>
+            <S.CameraVideo
+              ref={videoRefCallback}
+              autoPlay
+              controls={false}
+              muted
+            />
+            {!currentSlide.isRecording ? (
+              <FlatButton onClick={handleStartClick}>
+                start recording
+              </FlatButton>
+            ) : (
+              <FlatButton onClick={handleStopClick}>stop recording</FlatButton>
+            )}
+            {currentSlide.previewVideoObjectUrl && (
+              <div>
+                <h2>Record Preview</h2>
+                <S.CameraVideo
+                  onTimeUpdate={handlePreviewTimeUpdate}
+                  src={currentSlide.previewVideoObjectUrl}
+                  controls
+                  width="250"
+                />
+              </div>
+            )}
+          </Col>
+        </Row>
+      </Container>
+      {slideEditor.slides.map(({ id }, index) => (
         <button
+          key={id}
+          style={{ color: index === currentSlideIndex ? 'red' : '#aaa' }}
           onClick={() => {
-            addNewSlide();
+            setCurrentSlideIndex(index);
           }}
         >
-          +
+          {index}
         </button>
-        {slideEditor.slides.map(({ id }, index) => {
-          return (
-            <Slide
-              key={id}
-              slideIndex={index}
-              selected={index === currentSlideIndex}
-            />
-          );
-        })}
-      </S.EditorContainer>
-      <S.VideoContainer>
-        <S.CameraVideo
-          ref={videoRefCallback}
-          autoPlay
-          controls={false}
-          muted
-        />
-        {!currentSlide.isRecording ? (
-          <S.RecordButton onClick={handleStartClick}>
-            start recording
-          </S.RecordButton>
-        ) : (
-          <S.RecordButton onClick={handleStopClick}>stop recording</S.RecordButton>
-        )}
-        {currentSlide.previewVideoObjectUrl && (
-          <div>
-            <h2>Record Preview</h2>
-            <S.PreviewVideo
-              onTimeUpdate={handlePreviewTimeUpdate}
-              src={currentSlide.previewVideoObjectUrl}
-              controls
-              width="250"
-            />
-          </div>
-        )}
-      </S.VideoContainer>
-    </S.Scaffold>
+      ))}
+      <button
+        onClick={() => {
+          addNewSlide();
+        }}
+      >
+        +
+      </button>
+    </div>
   );
 };
 
