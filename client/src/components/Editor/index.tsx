@@ -94,16 +94,19 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
     });
   }, [data]);
 
-  // TODO: MutationObserver로 효율성 개선하기
   useEffect(() => {
-    const intervalId = setInterval(() => {
+    const observer = new MutationObserver(() => {
       editorRef.current?.isReady.then(() => editorRef.current?.save()).then(data => {
         data && onChange(data);
       });
-    }, 100);
+    });
+
+    const editorHighlightLayerEl = editorHighlightLayerElRef.current;
+    if (!editorHighlightLayerEl) return;
+    observer.observe(editorHighlightLayerEl, { childList: true, subtree: true, characterData: true });
 
     return () => {
-      clearInterval(intervalId);
+      observer.disconnect();
     };
   }, [onChange]);
 

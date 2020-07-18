@@ -40,11 +40,11 @@ const VideoEdit: React.FC = () => {
     }));
   };
 
-  const addTextChange = (textData: OutputData) => {
+  const addTextChange = useCallback<(data: OutputData) => void>((textData: OutputData) => {
     setVideoEdit((state) => produce(state, (draftState) => {
       draftState.changes.push({ data: textData, videoTimestamp: (new Date().getTime() - videoEdit.recordingStartedAt) / 1000 });
     }));
-  };
+  }, [videoEdit.recordingStartedAt, setVideoEdit]);
 
   // TODO: Node기반 position으로 바꾸어 responsive하게 동작하게 만들기 
   const addSelectionChange = (rects?: EditorTextSelection[]) => {
