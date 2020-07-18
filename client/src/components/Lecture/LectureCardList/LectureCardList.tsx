@@ -41,6 +41,12 @@ const LectureCardList: React.FC<LectureCardListProps> = ({ lectures }) => {
     <CardContainer>
       <Row>
         {cards}
+        <Col md={4}>
+          <S.AddCard>
+            <S.AddIcon  />
+            <S.AddLectureText>새로운 강의 제작하기</S.AddLectureText>
+          </S.AddCard>
+        </Col>
       </Row>
     </CardContainer>
   );

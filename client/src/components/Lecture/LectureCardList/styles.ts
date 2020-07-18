@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import {Col, Container} from 'react-grid-system';
+import AddSvg from '@src/assets/add.svg';
 
 export const CardContainer = styled(Container)`
   margin-top: 40px;
@@ -18,6 +19,14 @@ export const Card = styled(Col)`
   &:hover {
     transform: scale(1.025);
   }
+`;
+
+export const AddCard = styled(Card)`
+  background-color: rgba(51, 58, 61, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const LectureImage = styled.div<{url: string}>`
@@ -53,4 +62,15 @@ export const BottomArea = styled.div`
 export const BottomText = styled.div`
   font-size: 1rem;
   color: rgba(51, 58, 61, 0.55);
+`;
+
+export const AddIcon = styled(AddSvg)`
+  width: 130px;
+  height: 130px;
+`;
+
+export const AddLectureText = styled.p`
+  font-size: 1.5rem;
+  color: rgba(51, 58, 61, 0.55);
+  margin-top: 24px;
 `;
