@@ -21,6 +21,7 @@ export function verifyJWT(token: string): void {
   jwt.verify(token, authKey!);
 }
 
-export function decodeJWT(token: string): null | { [key: string]: any } | string {
-  return jwt.decode(token);
+export function decodeJWT(token: string): string {
+  const decodedMap = jwt.decode(token) as { [key: string]: any };
+  return decodedMap.uid;
 }
