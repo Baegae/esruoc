@@ -100,7 +100,7 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
       editorRef.current?.isReady.then(() => editorRef.current?.save()).then(data => {
         data && onChange(data);
       });
-    }, 1000);
+    }, 100);
 
     return () => {
       clearInterval(intervalId);
