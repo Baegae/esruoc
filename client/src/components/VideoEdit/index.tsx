@@ -10,6 +10,7 @@ import * as S from './styles';
 import Slide from './Slide';
 import { Container, Row, Col } from 'react-grid-system';
 import FlatButton from '../common/FlatButton';
+import VideoRecordingController from './VideoRecordingController';
 
 let recorder: RecordRTC;
 
@@ -41,6 +42,44 @@ const VideoEdit: React.FC = () => {
   const setCurrentSlideIndex = (index: number) => {
     setSlideEditor({ ...slideEditor, currentSlideIndex: index });
   };
+
+  const startRecording = () => {
+    if (currentSlide.isRecording) {
+      return;
+    }
+    setIsRecording(true);
+    resetAndStartRecording();
+    recorder.startRecording();
+  };
+
+  const stopRecording = () => {
+    recorder.stopRecording(() => {
+      setPreviewUrl(recorder.toURL());
+      setIsRecording(false);
+      // uploadVideoToServer(recorder.getBlob()).then(() => {
+      //   alert('upload ok!');
+      // });
+    });
+  };
+
+  const handlePressPreviousSlide:
+    | React.MouseEventHandler
+    | undefined = slideEditor.slides[currentSlideIndex - 1]
+      ? () => setCurrentSlideIndex(currentSlideIndex - 1)
+      : undefined;
+
+  const handlePressNextSlide: React.MouseEventHandler | undefined = slideEditor
+    .slides[currentSlideIndex + 1]
+    ? () => setCurrentSlideIndex(currentSlideIndex + 1)
+    : undefined;
+
+  const handlePressRecording:
+    | React.MouseEventHandler
+    | undefined = currentSlide.isRecording ? undefined : startRecording;
+
+  const handlePressStop:
+    | React.MouseEventHandler
+    | undefined = !currentSlide.isRecording ? undefined : stopRecording;
 
   const addNewSlide = () => {
     setSlideEditor((state) =>
@@ -78,25 +117,6 @@ const VideoEdit: React.FC = () => {
     setCurrentSlide((state) => ({ ...state, previewCurrentTime: currentTime }));
   };
 
-  const handleStartClick = () => {
-    if (currentSlide.isRecording) {
-      return;
-    }
-    setIsRecording(true);
-    resetAndStartRecording();
-    recorder.startRecording();
-  };
-
-  const handleStopClick = () => {
-    recorder.stopRecording(() => {
-      setPreviewUrl(recorder.toURL());
-      setIsRecording(false);
-      // uploadVideoToServer(recorder.getBlob()).then(() => {
-      //   alert('upload ok!');
-      // });
-    });
-  };
-
   const handlePreviewTimeUpdate: ChangeEventHandler<HTMLVideoElement> = (
     event
   ) => {
@@ -116,6 +136,9 @@ const VideoEdit: React.FC = () => {
                 onFocused={setCurrentSlideIndex}
               />
             ))}
+            <FlatButton onClick={addNewSlide}>
+              새로운 문단 추가
+            </FlatButton>
           </Col>
           <Col sm={3}>
             <S.CameraVideo
@@ -124,16 +147,15 @@ const VideoEdit: React.FC = () => {
               controls={false}
               muted
             />
-            {!currentSlide.isRecording ? (
-              <FlatButton onClick={handleStartClick}>
-                start recording
-              </FlatButton>
-            ) : (
-              <FlatButton onClick={handleStopClick}>stop recording</FlatButton>
-            )}
+            <VideoRecordingController
+              onPressNext={handlePressNextSlide}
+              onPressPrevious={handlePressPreviousSlide}
+              onPressRecording={handlePressRecording}
+              onPressStop={handlePressStop}
+            />
             {currentSlide.previewVideoObjectUrl && (
               <div>
-                <h2>Record Preview</h2>
+                <h2>[DEBUG] Record Preview</h2>
                 <S.CameraVideo
                   onTimeUpdate={handlePreviewTimeUpdate}
                   src={currentSlide.previewVideoObjectUrl}
@@ -145,24 +167,6 @@ const VideoEdit: React.FC = () => {
           </Col>
         </Row>
       </Container>
-      {slideEditor.slides.map(({ id }, index) => (
-        <button
-          key={id}
-          style={{ color: index === currentSlideIndex ? 'red' : '#aaa' }}
-          onClick={() => {
-            setCurrentSlideIndex(index);
-          }}
-        >
-          {index}
-        </button>
-      ))}
-      <button
-        onClick={() => {
-          addNewSlide();
-        }}
-      >
-        +
-      </button>
     </div>
   );
 };

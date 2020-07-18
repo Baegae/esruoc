@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Shape</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="skip-slide" fill="#000000" fill-rule="nonzero">
+            <path d="M10,0 C4.48,0 0,4.48 0,10 C0,15.52 4.48,20 10,20 C15.52,20 20,15.52 20,10 C20,4.48 15.52,0 10,0 Z M16,11.97 L11,11.97 L13.26,9.71 C12.35,8.65 11.01,7.97 9.5,7.97 C7.13,7.97 5.15,9.63 4.64,11.85 L3.68,11.53 C4.32,8.91 6.68,6.97 9.5,6.97 C11.28,6.97 12.87,7.76 13.97,9 L16,6.97 L16,11.97 Z" id="Shape" transform="translate(10.000000, 10.000000) scale(-1, 1) translate(-10.000000, -10.000000) "></path>
+        </g>
+    </g>
+</svg>
