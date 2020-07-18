@@ -83,20 +83,17 @@ const VideoEdit: React.FC = () => {
   return (
     <Scaffold>
       <EditorContainer>
-        {slideEditor.slides.map((_, index) => (<button key={index} onClick={() => { setCurrentSlideIndex(index); }}>{index}</button>))}
+        {slideEditor.slides.map((_, index) => (
+          <button key={index} onClick={() => { setCurrentSlideIndex(index); }}>
+            {index}
+          </button>
+        ))}
         {slideEditor.slides.map((_, index) => {
-          if (index === currentSlideIndex) {
-            return (
-              <div style={{ backgroundColor: 'yellow' }}>
-                <Slide key={index}
-                  slideIndex={index}
-                />
-              </div>
-            );
-          }
           return (
-            <Slide key={index}
+            <Slide
+              key={index}
               slideIndex={index}
+              selected={index === currentSlideIndex}
             />
           );
         })}
@@ -125,7 +122,7 @@ const VideoEdit: React.FC = () => {
 
 };
 
-const Slide: React.FC<{ slideIndex: number }> = ({ slideIndex }) => {
+const Slide: React.FC<{ slideIndex: number; selected?: boolean }> = ({ slideIndex, selected }) => {
   const editorData = useRecoilValue(editorTextDataState(slideIndex));
   const previewSelectionData = useRecoilValue(editorPreviewHighlightState(slideIndex));
 
@@ -160,12 +157,14 @@ const Slide: React.FC<{ slideIndex: number }> = ({ slideIndex }) => {
   };
 
   return (
-    <Editor
-      data={editorData}
-      onChange={handleTextDataChange}
-      selection={previewSelectionData}
-      onSelectionChange={handleSelectionChange}
-    />
+    <div style={{ backgroundColor: selected ? 'yellow' : undefined }}>
+      <Editor
+        data={editorData}
+        onChange={handleTextDataChange}
+        selection={previewSelectionData}
+        onSelectionChange={handleSelectionChange}
+      />
+    </div>
   );
 };
 
