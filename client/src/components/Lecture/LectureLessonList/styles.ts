@@ -45,6 +45,7 @@ export const ItemWrapperRow = styled(Row)`
 export const PlayButton = styled(PlayButtonSvg)`
   width: 4rem;
   height: auto;
+  float: right;
 `;
 
 export const AddLessonButtonContainer = styled.div`
