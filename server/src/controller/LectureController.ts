@@ -4,7 +4,7 @@ import CreateLectureResponse from '@shared/response/CreateLectureResponse';
 import CreateLessonResponse from '@shared/response/CreateLessonResponse';
 import User from '@shared/entity/User';
 import LectureListOutput from '@shared/response/LectureListOutput';
-import LessonListOutput from '@shared/response/LessonListOutput';
+import LectureDetailOutput from '@shared/response/LectureDetailOutput';
 
 /**
  * @swagger
@@ -216,10 +216,10 @@ export class LectureController {
    *         description: 차시 목록 정보
    *         schema:
    *           type: object
-   *           $ref: '#/definitions/LessonListOutput'
+   *           $ref: '#/definitions/LessonDetailOutput'
    */
     @Get('/:lectureId')
-    getLessons(@Param('lectureId') lectureId: string): Promise<LessonListOutput> {
+    getLessons(@Param('lectureId') lectureId: string): Promise<LectureDetailOutput> {
       return this.lectureService.getLessons(lectureId);
     }
 
