@@ -1,14 +1,17 @@
-import {getUnsignedUrl, uploadFileToStorage} from '@database/Firebase';
+import {uploadFileToStorage} from '@database/Firebase';
 import ImageOutput from '@shared/response/ImageOutput';
 import crypto from 'crypto';
 import request from 'request';
 import fs from 'fs';
 
+const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
+
 export class ImageService {
-  async uploadImage(image: any): Promise<ImageOutput> {
+  async uploadImage(image: File): Promise<ImageOutput> {
     const randomKey = crypto.randomBytes(16).toString('hex');
-    await uploadFileToStorage('image', randomKey, image);
-    const imageUrl = await getUnsignedUrl(`image/${randomKey}`);
+    const imageUrl = await uploadFileToStorage('image', `${randomKey}`, image);
+
+    await sleep(3000);
 
     return {
       success: 1,
@@ -22,8 +25,9 @@ export class ImageService {
   async fetchUrl(url: string): Promise<ImageOutput> {
     const randomKey = crypto.randomBytes(16).toString('hex');
     const fileName = await this.downloadImage(url, randomKey);
-    await uploadFileToStorage('image', randomKey, fs.readFileSync(fileName));
-    const imageUrl = await getUnsignedUrl(`image/${randomKey}`);
+    const imageUrl = await uploadFileToStorage('image', randomKey, fs.readFileSync(fileName));
+
+    await sleep(3000);
 
     return {
       success: 1,
