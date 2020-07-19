@@ -11,5 +11,10 @@ services:
     - .:/lectus
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/lectus/server/credential/esrouc-firebase-credential.json
-      - GOOGLE_FIREBASE_STORAGE_BUCKET=<GOOGLE CLOUD STORAGE BUCKET NAME>
-      - AUTH_KEY=<AUTH_KEY>
+      - GOOGLE_FIREBASE_STORAGE_BUCKET=
+      - GOOGLE_FIREBASE_API_KEY=
+      - GOOGLE_FIREBASE_AUTH_DOMAIN=
+      - GOOGLE_FIREBASE_PROJECT_ID=
+      - GOOGLE_FIREBASE_APP_ID=
+      - GOOGLE_FIREBASE_MEASUREMENT_ID=
+      - AUTH_KEY=
