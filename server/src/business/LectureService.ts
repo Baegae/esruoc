@@ -6,20 +6,27 @@ import Lesson from '@shared/entity/Lesson';
 import CreateLessonResponse from '@shared/response/CreateLessonResponse';
 import {Types} from 'mongoose';
 import {NotFoundError} from 'routing-controllers';
+import User from '../../../shared/src/entity/User';
 
 class CreateLectureService {
     lectureRepository = new LectureRepository();
 
-    async createLecture(lectureMainImage: any, payload: CreateLectureRequest): Promise<CreateLectureResponse> {
+    async createLecture(user: User, lectureMainImage: any, payload: CreateLectureRequest): Promise<CreateLectureResponse> {
       const savedLecture = await this.lectureRepository.saveLecture({
         title: payload.title,
         description: payload.description,
-        uploaderId: 'dsa28s',
+        uploaderId: user.uid,
         lessons: [],
+        isDraft: false,
+        isComplete: false,
+        mainImageUrl: '',
+        uploadedAt: new Date()
       });
 
       await uploadFileToStorage(`lecture/${savedLecture._id}`, 'MainImage', lectureMainImage);
       const mainImageUrl = await getPublicUrl(`lecture/${savedLecture._id}/MainImage`);
+
+      await this.lectureRepository.updateMainImageUrl(savedLecture.id, mainImageUrl);
 
       return {
         id: savedLecture.id.toString(),

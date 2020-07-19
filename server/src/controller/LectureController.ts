@@ -1,7 +1,9 @@
-import {BodyParam, JsonController, Param, Post, UploadedFile} from 'routing-controllers';
+import {BodyParam, CurrentUser, Get, JsonController, Param, Post, UploadedFile} from 'routing-controllers';
 import LectureService from '@business/LectureService';
 import CreateLectureResponse from '@shared/response/CreateLectureResponse';
 import CreateLessonResponse from '@shared/response/CreateLessonResponse';
+import LectureOutputList from '../../../shared/src/response/LectureOutputList';
+import User from '../../../shared/src/entity/User';
 
 @JsonController('/lecture')
 export class LectureController {
@@ -60,12 +62,17 @@ export class LectureController {
      *           $ref: '#/definitions/Lecture'
      */
     @Post('')
-    async createLecture(@BodyParam('title', {required: true}) title: string,
+    async createLecture(@CurrentUser() user: User,
+                        @BodyParam('title', {required: true}) title: string,
                         @BodyParam('description', {required: true}) description: string,
                         @UploadedFile('lectureMainImage') lectureMainImage?: any): Promise<CreateLectureResponse> {
-      return await this.lectureService.createLecture(lectureMainImage, {
-        title: title, description: description
-      });
+      return await this.lectureService.createLecture(
+        user,
+        lectureMainImage,
+        {
+          title: title, description: description
+        }
+      );
     }
 
 

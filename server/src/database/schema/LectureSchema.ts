@@ -6,6 +6,10 @@ const LectureSchema = new mongoose.Schema({
   description: {type: String, required: true},
   uploaderId: {type: String, required: true},
   lessons: {type: [LessonSchema]},
+  isDraft: {type: Boolean, required: true},
+  isComplete: {type: Boolean, required: true},
+  mainImageUrl: {type: String},
+  uploadedAt: {type: Date, required: true}
 });
 
 export default LectureSchema;
