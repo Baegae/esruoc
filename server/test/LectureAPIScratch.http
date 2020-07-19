@@ -1,6 +1,7 @@
 # Lecture 생성
 POST http://127.0.0.1:8000/lecture
 Content-Type: multipart/form-data; boundary=boundary
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJFMFVScDZ5SW5sUXNtRnU4YW5uUm5TU2NBNFQyIiwibmFtZSI6IuyYpOyKueykgCIsImVtYWlsIjoib3NqdW55MTFAZ21haWwuY29tIiwicHJvZmlsZUltYWdlVXJsIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2hSOXFSaXdIQWozeWxiekt6WHpLY3RHaHh4Z2pERWZNYmpkNHBNSDdvIiwiaWF0IjoxNTk1MTQzNzY1LCJleHAiOjE1OTU3NDg1NjV9.mbpl4v-2GlspCmQzD5Wl1h9w8A4r6wQPEraYCGnF1-U
 
 --boundary
 Content-Disposition: form-data; name="title";
@@ -54,3 +55,10 @@ Content-Type: video/mp4
 < /Users/dsa28s/Downloads/IMG_0308.jpg
 
 --boundary--
+
+
+###
+
+# 강의 목록
+GET http://127.0.0.1:8000/lecture
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJFMFVScDZ5SW5sUXNtRnU4YW5uUm5TU2NBNFQyIiwibmFtZSI6IuyYpOyKueykgCIsImVtYWlsIjoib3NqdW55MTFAZ21haWwuY29tIiwicHJvZmlsZUltYWdlVXJsIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2hSOXFSaXdIQWozeWxiekt6WHpLY3RHaHh4Z2pERWZNYmpkNHBNSDdvIiwiaWF0IjoxNTk1MTQzNzY1LCJleHAiOjE1OTU3NDg1NjV9.mbpl4v-2GlspCmQzD5Wl1h9w8A4r6wQPEraYCGnF1-U

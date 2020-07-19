@@ -10,18 +10,22 @@ import User from '@shared/entity/User';
 import Lecture from '@shared/entity/Lecture';
 import LectureOutput from '@shared/response/LectureOutput';
 import UserRepository from '@repository/UserRepository';
+import LectureListOutput from '@shared/response/LectureListOutput';
 
 class CreateLectureService {
     lectureRepository = new LectureRepository();
     userRepository = new UserRepository();
 
-    async getLectures(): Promise<{ lectures: Promise<LectureOutput>[] }> {
+    async getLectures(): Promise<LectureListOutput>{
+      const result: LectureOutput[] = [];
       const lectureDocuments = await this.lectureRepository.getAllLectures();
+      for (const lectureDocument of lectureDocuments) {
+        const lecture = lectureDocument as Lecture;
+        const output = await this.mapLectureOutput(lecture);
+        result.push(output);
+      }
       return {
-        lectures: lectureDocuments.map((lectureDocument) => {
-          const lecture = lectureDocument as Lecture;
-          return this.mapLectureOutput(lecture);
-        })
+        lectures: result
       };
     }
 
@@ -79,7 +83,7 @@ class CreateLectureService {
     private async mapLectureOutput(lecture: Lecture): Promise<LectureOutput> {
       const user = await this.userRepository.findUserByUid(lecture.uploaderId);
       return {
-        id: lecture._id!,
+        id: lecture._id!.toString(),
         title: lecture.title,
         description: lecture.description,
         isDraft: lecture.isDraft,
@@ -90,7 +94,6 @@ class CreateLectureService {
           uid: user!.uid,
           name: user!.name,
           email: user!.email,
-          description: user!.description,
           profileImageUrl: user!.profileImageUrl
         }
       };
