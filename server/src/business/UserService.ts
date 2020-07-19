@@ -31,7 +31,6 @@ export class UserService {
       uid: userRecord.uid,
       name: userRecord.displayName!,
       email: userRecord.email!,
-      description: '',
       profileImageUrl: userRecord.photoURL!,
       createdAt: new Date()
     });
