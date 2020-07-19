@@ -10,6 +10,7 @@ import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Underline from '@editorjs/underline';
 import Marker from '@editorjs/marker';
+import Image from '@editorjs/image';
 import QuizBlockPlugin from './QuizBlock/plugin';
 import EditorWrapper from '@src/styles/EditorWrapper';
 import DragDrop from 'editorjs-drag-drop';
@@ -20,8 +21,8 @@ const editorJsConfig: EditorConfig = {
   i18n: {
     messages: {
       ui: {
-        'blockTunes': {
-          'toggler': {
+        blockTunes: {
+          toggler: {
             'Click to tune': '클릭하거나 드래그하여, 블록 이동',
           },
         },
@@ -46,8 +47,16 @@ const editorJsConfig: EditorConfig = {
         Bold: '굵게',
         Italic: '기울게',
         Underline: '밑줄',
+        Image: '사진'
       },
       tools: {
+        image: {
+          Caption: '설명',
+        },
+        list: {
+          Unordered: '순서가 없는 리스트',
+          Ordered: '순서가 있는 리스트',
+        },
         link: {
           'Add a link': '링크 추가',
         },
@@ -72,7 +81,10 @@ const editorJsConfig: EditorConfig = {
   },
   tools: {
     header: Header,
-    list: List,
+    list: {
+      class: List,
+      inlineToolbar: true,
+    },
     underline: {
       class: Underline,
       shortcut: 'CMD+SHIFT+U',
@@ -80,6 +92,15 @@ const editorJsConfig: EditorConfig = {
     marker: {
       class: Marker,
       shortcut: 'CMD+SHIFT+M',
+    },
+    image: {
+      class: Image,
+      config: {
+        endpoints: {
+          byFile: 'http://10.10.20.110:8000/uploadFile', // Your backend file uploader endpoint
+          byUrl: 'http://10.10.20.110:8000/fetchUrl', // Your endpoint that provides uploading by Url
+        },
+      },
     },
     quiz: {
       // eslint-disable-next-line
@@ -126,13 +147,15 @@ function EditorJSText() {
 
   return (
     <div>
-      <EditorWrapper>
-        <div id="editor" />
-      </EditorWrapper>
+      <div style={{ width: 680, margin: '0 auto' }}>
+        <EditorWrapper>
+          <div id="editor" />
+        </EditorWrapper>
+      </div>
       <button onClick={handleLoad}>load</button>
       <textarea value={text}
         onChange={handleChange}
-      ></textarea>
+      />
       <button onClick={handleSave}>save</button>
     </div>
   );
