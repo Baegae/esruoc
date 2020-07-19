@@ -1,14 +1,8 @@
 import axios from 'axios';
-import jwt_decode from 'jwt-decode';
-import {setCookie, parseCookies, destroyCookie} from 'nookies';
-
-import Router from 'next/router';
-import User from '@shared/src/entity/User';
-
-const ACCESS_TOKEN_STORE_KEY = 'esruoc-access-token';
+import {deleteAccessToken, getSavedToken, getUserInfo, gotoMain, setAccessToken} from '@src/utils/Login';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: process.env.API_URL,
 });
 
 axiosInstance.interceptors.request.use((request) => {
@@ -28,51 +22,10 @@ axiosInstance.interceptors.response.use((response) => {
 }, function (error) {
   if (error.response && error.response.status === 401 && !error.response.request.responseURL.endsWith('/user/login')) {
     deleteAccessToken();
-    _gotoMain();
+    gotoMain();
 
     return error;
   }
 });
-
-export const setAccessToken = (accessToken: string) => {
-  try {
-    jwt_decode(accessToken);
-
-    setCookie(null, ACCESS_TOKEN_STORE_KEY, accessToken, {
-      maxAge: 7 * 24 * 60 * 60,
-      path: '/',
-    });
-  } catch (e) {
-    console.log(e);
-  }
-
-  _gotoMain();
-};
-
-export const deleteAccessToken = () => {
-  destroyCookie(null, ACCESS_TOKEN_STORE_KEY, {
-    path: '/',
-  });
-  _gotoMain();
-};
-
-export const getSavedToken = (): string => {
-  return parseCookies()[ACCESS_TOKEN_STORE_KEY];
-};
-
-export const getUserInfo = (): User | undefined => {
-  const accessToken = getSavedToken();
-
-  if (accessToken) {
-    const decodedToken = jwt_decode(accessToken);
-    return decodedToken as User;
-  }
-
-  return undefined;
-};
-
-const _gotoMain = () => {
-  Router.push('/');
-};
 
 export default axiosInstance;
