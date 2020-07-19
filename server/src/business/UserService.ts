@@ -33,7 +33,6 @@ export class UserService {
       email: userRecord.email!,
       profileImageUrl: userRecord.photoURL!,
       createdAt: new Date(),
-      description: '이거슨 유저 설명',
     });
   }
 }
