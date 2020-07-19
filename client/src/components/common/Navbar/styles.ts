@@ -20,5 +20,6 @@ export const MenuWrapper = styled.ul`
   li {
     margin-left: 1rem;
     padding: 0 0.25rem;
+    cursor: pointer;
   }
 `;

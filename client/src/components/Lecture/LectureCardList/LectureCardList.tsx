@@ -2,6 +2,7 @@ import React, {ReactNode} from 'react';
 import Lecture from '@shared/src/entity/Lecture';
 import {CardContainer} from '@src/components/Lecture/LectureCardList/styles';
 import {Col, Row} from 'react-grid-system';
+import Router from 'next/router';
 
 import * as S from './styles';
 import {CompleteTag, DraftTag, ProcessingTag} from '@src/components/common/Tag/Tag';
@@ -15,7 +16,9 @@ const LectureCardList: React.FC<LectureCardListProps> = ({ lectures }) => {
 
   lectures.map((lecture) => {
     cards.push(
-      <Col md={4}>
+      <Col md={4}
+        onClick={() => gotoLectureInfo(lecture._id!)}
+      >
         <S.Card>
           <S.LectureImage url={lecture.mainImageUrl!} />
           <S.TextArea>
@@ -43,13 +46,19 @@ const LectureCardList: React.FC<LectureCardListProps> = ({ lectures }) => {
         {cards}
         <Col md={4}>
           <S.AddCard>
-            <S.AddIcon  />
+            <S.AddIcon />
             <S.AddLectureText>새로운 강의 제작하기</S.AddLectureText>
           </S.AddCard>
         </Col>
       </Row>
     </CardContainer>
   );
+};
+
+const gotoLectureInfo = (lectureId: string) => {
+  Router.push({
+    pathname: `/lecture/${lectureId!}`
+  });
 };
 
 const getFormatDate = (date: Date) => {

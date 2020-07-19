@@ -13,6 +13,7 @@ export default () => (
       />
       <LectureCardList lectures={[
         {
+          _id: 'myLecture1',
           title: '차세대 스캐터인들을 위한 DEV-101',
           description: '설명설명설명설명설명설명설명설명설명',
           uploaderId: '이상훈',
@@ -23,8 +24,9 @@ export default () => (
           mainImageUrl: 'https://source.unsplash.com/random/1920x1080',
         },
         {
-          title: '차세대 스캐터인들을 위한 DEV-101',
-          description: '설명설명설명설명설명설명설명설명설명',
+          _id: 'myLecture2',
+          title: '차세대 스캐터인들을 위한 DEV-101 두번쨰',
+          description: '설명설명설명설명설명설명설명설명설명 2',
           uploaderId: '이상훈',
           lessons: new Array(24).fill(null),
           isDraft: false,
@@ -33,8 +35,9 @@ export default () => (
           mainImageUrl: 'https://source.unsplash.com/random/1920x1080',
         },
         {
-          title: '차세대 스캐터인들을 위한 DEV-101',
-          description: '설명설명설명설명설명설명설명설명설명',
+          _id: 'myLecture3',
+          title: '차세대 스캐터인들을 위한 DEV-101 세번째',
+          description: '설명설명설명설명설명설명설명설명설명 3',
           uploaderId: '이상훈',
           lessons: new Array(24).fill(null),
           isDraft: false,
@@ -43,8 +46,9 @@ export default () => (
           mainImageUrl: 'https://source.unsplash.com/random/1920x1080',
         },
         {
-          title: '차세대 스캐터인들을 위한 DEV-101',
-          description: '설명설명설명설명설명설명설명설명설명',
+          _id: 'myLecture4',
+          title: '차세대 스캐터인들을 위한 DEV-101 네번째',
+          description: '설명설명설명설명설명설명설명설명설명 4',
           uploaderId: '이상훈',
           lessons: new Array(24).fill(null),
           isDraft: false,

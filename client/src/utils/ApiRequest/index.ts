@@ -20,13 +20,13 @@ axiosInstance.interceptors.request.use((request) => {
 });
 
 axiosInstance.interceptors.response.use((response) => {
-  if (response.status == 200 && response.request.url.endsWith('/user/login')) {
-    setAccessToken(response.data.accessToken);
+  if (response.status == 200 && response.request.responseURL.endsWith('/user/login')) {
+    setAccessToken(response.data);
   }
 
   return response;
 }, function (error) {
-  if (error.response.status === 401 && !error.response.request.url.endsWith('/user/login')) {
+  if (error.response && error.response.status === 401 && !error.response.request.responseURL.endsWith('/user/login')) {
     deleteAccessToken();
     _gotoMain();
 
@@ -43,12 +43,17 @@ export const setAccessToken = (accessToken: string) => {
       path: '/',
     });
   } catch (e) {
-    _gotoMain();
+    console.log(e);
   }
+
+  _gotoMain();
 };
 
 export const deleteAccessToken = () => {
-  destroyCookie(null, ACCESS_TOKEN_STORE_KEY);
+  destroyCookie(null, ACCESS_TOKEN_STORE_KEY, {
+    path: '/',
+  });
+  _gotoMain();
 };
 
 export const getSavedToken = (): string => {

@@ -31,6 +31,10 @@ const LectureInfoHeader: React.FC<Lecture> = ({
             </S.UploaderWrapper>
           </S.InfoWrapper>
         </Col>
+        <S.LectureUploadInfoContainer>
+          <S.LectureUploadInfoTitle>강의 제작 날짜</S.LectureUploadInfoTitle>
+          <S.LectureUploadInfoDate>2020년 3월</S.LectureUploadInfoDate>
+        </S.LectureUploadInfoContainer>
       </S.RelativeRow>
       <S.AbsoluteRow justify="end">
         <Col sm={8}>

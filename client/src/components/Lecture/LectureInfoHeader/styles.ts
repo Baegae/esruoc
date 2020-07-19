@@ -80,3 +80,20 @@ export const UploaderProfileImage = styled.div<{url: string}>`
   background: no-repeat center/cover url(${({url}) => url});
   margin-right: 1rem;
 `;
+
+export const LectureUploadInfoContainer = styled.div`
+  position: relative;
+  margin-top: -220px;
+  left: 15px;
+`;
+
+export const LectureUploadInfoTitle = styled.p`
+  font-size: 1rem;
+  color: rgba(51, 58, 61, 0.55);
+`;
+
+export const LectureUploadInfoDate = styled.p`
+  font-size: 1.375rem;
+  color: black;
+  font-weight: 700;
+`;
