@@ -14,7 +14,7 @@ interface Lecture {
     // 임시 저장 상태
     isDraft: boolean;
     // 이 강의를 내가 만들었나
-    uploadedByMe: boolean;
+    uploadedByMe?: boolean;
     // 완료 여부
     isComplete: boolean;
     // 대표 이미지 URL
