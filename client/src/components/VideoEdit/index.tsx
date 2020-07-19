@@ -181,36 +181,42 @@ const VideoEdit: React.FC = () => {
                 onFocused={setCurrentSlideIndex}
               />
             ))}
-            <FlatButton onClick={addNewSlide}>
+            {slideEditor.editingState === EditingState.Editing && <FlatButton onClick={addNewSlide}>
               새로운 문단 추가
-            </FlatButton>
+            </FlatButton>}
             <S.SlideSpacer />
           </Col>
           <Col sm={3}>
-            <S.CameraVideo
-              ref={videoRefCallback}
-              autoPlay
-              controls={false}
-              muted
-            />
-            <VideoRecordingController
-              onPressNext={handlePressNextSlide}
-              onPressPrevious={handlePressPreviousSlide}
-              onPressRecording={handlePressRecording}
-              onPressStop={handlePressStop}
-            />
+            <S.VideoContainer>
+              {slideEditor.preview.videoObjectUrl && (
+                <div>
+                  <h2>[DEBUG] Record Preview</h2>
+                  <S.CameraVideo
+                    onTimeUpdate={handlePreviewTimeUpdate}
+                    src={slideEditor.preview.videoObjectUrl}
+                    controls
+                    width="250"
+                  />
+                </div>
+              )}
+              {slideEditor.editingState !== EditingState.Previewing && (
+                <>
+                  <S.CameraVideo
+                    ref={videoRefCallback}
+                    autoPlay
+                    controls={false}
+                    muted
+                  />
+                  <VideoRecordingController
+                    onPressNext={handlePressNextSlide}
+                    onPressPrevious={handlePressPreviousSlide}
+                    onPressRecording={handlePressRecording}
+                    onPressStop={handlePressStop}
+                  />
+                </>
+              )}
+            </S.VideoContainer>
             {slideEditor.editingState === EditingState.Previewing && <button onClick={discardRecording}>discard</button>}
-            {slideEditor.preview.videoObjectUrl && (
-              <div>
-                <h2>[DEBUG] Record Preview</h2>
-                <S.CameraVideo
-                  onTimeUpdate={handlePreviewTimeUpdate}
-                  src={slideEditor.preview.videoObjectUrl}
-                  controls
-                  width="250"
-                />
-              </div>
-            )}
           </Col>
         </Row>
       </Container>
