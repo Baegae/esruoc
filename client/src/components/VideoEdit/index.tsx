@@ -205,7 +205,6 @@ const VideoEdit: React.FC = () => {
                     ref={registerPreviewVideoEl}
                     onTimeUpdate={handlePreviewTimeUpdate}
                     src={slideEditor.preview.videoObjectUrl}
-                    controls
                     width="250"
                   />
                 </div>
