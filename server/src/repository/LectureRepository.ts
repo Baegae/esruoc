@@ -17,7 +17,7 @@ class LectureRepository {
     async getAllLectures(): Promise<LectureDocument[]> {
       return new Promise<LectureDocument[]>((resolve, reject) => {
         this.lectureSchema.find((err, document) => {
-          if (document == null) {
+          if (document === null) {
             reject('No lectures.');
           } else {
             resolve(document);
@@ -29,7 +29,7 @@ class LectureRepository {
     async getLecture(filter: any): Promise<LectureDocument> {
       return new Promise<LectureDocument>((resolve, reject) => {
         this.lectureSchema.findOne(filter, (err, document) => {
-          if (document == null) {
+          if (document === null) {
             reject('No lecture match the filter.');
           } else {
             resolve(document);
@@ -44,7 +44,7 @@ class LectureRepository {
           {_id: id},
           {mainImageUrl: mainImageUrl},
           (err, document) => {
-            if (document == null) {
+            if (document === null) {
               reject('No lecture match the filter.');
             } else {
               resolve(document);
