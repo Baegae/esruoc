@@ -32,13 +32,11 @@ class LectureService {
     async getMyLectures(user: User): Promise<LectureListOutput> {
       const result: LectureOutput[] = [];
 
-      if (!user.uploadedCourses) {
-        return {lectures: []};
-      }
-      for (const uploadedId of user.uploadedCourses) {
-        const lecture = await this.lectureRepository.getLecture({'_id': new Types.ObjectId(uploadedId)});
-        const output = await this.mapLectureOutput(lecture);
-        result.push(output);
+      const lectureDocuments = await this.lectureRepository.getAllLectures();
+      for (const lectureDocument of lectureDocuments) {
+        const lecture = lectureDocument as Lecture;
+        if (lecture.uploaderId == user.uid) {const output = await this.mapLectureOutput(lecture);
+          result.push(output);}
       }
       return {lectures: result};
     }
