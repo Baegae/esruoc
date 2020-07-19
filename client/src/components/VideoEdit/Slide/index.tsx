@@ -68,7 +68,7 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
       }
       addTextChange(textData);
     },
-  [addTextChange, currentSlide.isRecording]
+  [addTextChange, currentSlide.isRecording, editingState]
   );
 
   const handleSelectionChange = (rects?: EditorTextSelection[]) => {
@@ -79,7 +79,7 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
   };
 
   const handleFocused: React.FocusEventHandler = () => {
-    if(!onFocused) {
+    if (!onFocused) {
       return;
     }
     onFocused(slideIndex);
