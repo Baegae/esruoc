@@ -102,6 +102,25 @@ export class LectureController {
     }
 
     /**
+   * @swagger
+   * /lecture/my:
+   *   get:
+   *     summary: 내가 만든 강의 목록 제공
+   *
+   *     tags: [Lecture]
+   *     responses:
+   *       200:
+   *         description: 내가 만든 강의 목록 정보
+   *         schema:
+   *           type: object
+   *           $ref: '#/definitions/LectureListOutput'
+   */
+    @Get('/my')
+    async getMyLectures(@CurrentUser() user: User): Promise<LectureListOutput> {
+      return await this.lectureService.getMyLectures(user);
+    }
+
+    /**
      * @swagger
      * /lecture:
      *   post:
