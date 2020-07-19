@@ -14,5 +14,25 @@ export const CameraVideo = styled.video`
 `;
 
 export const SlideSpacer = styled.div`
-  height: 10rem;
+  height: 12rem;
+`;
+
+export const BottomBar = styled.div`
+  z-index: 1000;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5rem;
+  background-color: black;
+`;
+
+export const AudioTimeWrapper = styled.div`
+  font-size: 1rem;
+`;
+
+export const AudioButtonWrapper = styled.div`
+  font-size: 1rem;
+  display: flex;
+  justify-content: flex-end;
 `;
