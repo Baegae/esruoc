@@ -8,9 +8,6 @@ interface SlideState {
   changes: TextDataChange[];
   selectionChanges: TextSelectionChange[];
   isRecording: boolean;
-  recordingStartedAt: number;
-  previewVideoObjectUrl?: string;
-  previewCurrentTime: number;
 }
 
 
@@ -27,10 +24,15 @@ interface TextSelectionChange {
 interface SlideEditorState {
   currentSlideIndex: number;
   slides: SlideState[];
-  // 아직 안씀
   editingState: EditingState;
+  recordingStartedAt: number;
+  preview: PreviewState;
 }
 
+interface PreviewState {
+  videoObjectUrl: string;
+  currentTime: number;
+}
 
 // TODO: 학생이 강의 재생하고 강사는 녹화하고 자료 수정하고 세 작업을 하려면 아래 플래그가 필요함
 // Recording에서만 change 기록 및 비디오 녹화
@@ -50,9 +52,6 @@ export const defaultSlideData: SlideState = {
   changes: [],
   selectionChanges: [],
   isRecording: false,
-  recordingStartedAt: 0,
-  previewVideoObjectUrl: undefined,
-  previewCurrentTime: 0,
 };
 
 export let idCounter = 10;
@@ -67,7 +66,12 @@ export const slideEditorState = atom<SlideEditorState>({
   default: {
     currentSlideIndex: 0,
     slides: [createNewSlideData(), createNewSlideData()],
-    editingState: EditingState.Editing
+    editingState: EditingState.Editing,
+    recordingStartedAt: 0,
+    preview: {
+      videoObjectUrl: '',
+      currentTime: 0,
+    }
   },
 });
 
@@ -91,8 +95,9 @@ export const slideState = selectorFamily<SlideState, number>({
 export const latestTextChangeState = selectorFamily<OutputData, number>({
   key: 'latestTextChangeState',
   get: slideIndex => ({ get }) => {
+    const { preview: { currentTime }} = get(slideEditorState);
     const slide = get(slideState(slideIndex));
-    const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= slide.previewCurrentTime;
+    const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= currentTime;
     const latestChangeBeforeCurrentTime = slide.changes.filter(isChangeBeforeCurrentTime).slice(-1);
     // 최근 수정 사항이 없으면 첫 text로 시작함
     return (latestChangeBeforeCurrentTime.length > 0 ? latestChangeBeforeCurrentTime[0].data : slide.originalEditorData);
@@ -109,8 +114,9 @@ export const editorTextDataState = selectorFamily<OutputData | undefined, number
 export const editorPreviewHighlightState = selectorFamily<EditorTextSelection[] | undefined, number>({
   key: 'editorPreviewHighlightState',
   get: slideIndex => ({ get }) => {
+    const { preview: { currentTime }} = get(slideEditorState);
     const slide = get(slideState(slideIndex));
-    const isChangeBeforeCurrentTime = (change: TextSelectionChange) => change.videoTimestamp <= slide.previewCurrentTime;
+    const isChangeBeforeCurrentTime = (change: TextSelectionChange) => change.videoTimestamp <= currentTime;
     const latestChangeBeforeCurrentTime = slide.selectionChanges.filter(isChangeBeforeCurrentTime).slice(-1);
     return (latestChangeBeforeCurrentTime.length > 0 ? latestChangeBeforeCurrentTime[0].data : undefined);
   },

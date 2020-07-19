@@ -25,7 +25,7 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
     editorPreviewHighlightState(slideIndex)
   );
 
-  const { editingState } = useRecoilValue(slideEditorState);
+  const { editingState, recordingStartedAt } = useRecoilValue(slideEditorState);
   const [currentSlide, setCurrentSlide] = useRecoilState(
     slideState(slideIndex)
   );
@@ -37,12 +37,12 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
           draftState.changes.push({
             data: textData,
             videoTimestamp:
-              (new Date().getTime() - currentSlide.recordingStartedAt) / 1000,
+              (new Date().getTime() - recordingStartedAt) / 1000,
           });
         })
       );
     },
-  [currentSlide.recordingStartedAt, setCurrentSlide]
+  [setCurrentSlide, recordingStartedAt]
   );
 
   // TODO: Node기반 position으로 바꾸어 responsive하게 동작하게 만들기
@@ -52,7 +52,7 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
         draftState.selectionChanges.push({
           data: rects,
           videoTimestamp:
-            (new Date().getTime() - currentSlide.recordingStartedAt) / 1000,
+            (new Date().getTime() - recordingStartedAt) / 1000,
         });
       })
     );
