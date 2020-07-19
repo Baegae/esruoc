@@ -71,6 +71,12 @@ export class LectureController {
    *       uploadedAt:
    *         type: Date
    *         description: 강의 제작 날짜
+   *       lessonCount:
+   *         type: number,
+   *         description: 차시 개수
+   *       isTaking:
+   *         type: boolean,
+   *         description: 수강 여부,
    *       uploader:
    *         type: object
    *         description: 제작한 유저 정보

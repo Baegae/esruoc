@@ -8,6 +8,8 @@ interface LectureOutput {
   isComplete: boolean,
   mainImageUrl?: string,
   uploadedAt: Date,
+  lessonCount: number,
+  isTaking: boolean,
   uploader: UserOutput
 }
 

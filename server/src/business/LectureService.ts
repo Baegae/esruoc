@@ -105,6 +105,10 @@ class LectureService {
 
     private async mapLectureOutput(lecture: Lecture): Promise<LectureOutput> {
       const user = await this.userRepository.findUserByUid(lecture.uploaderId);
+      const takingLecture = user?.inProgressCourses
+        ?.map(inProgressLecture => inProgressLecture.lectureId);
+      const isTaking: boolean = (takingLecture == null) ? false :
+        takingLecture.includes(lecture._id!.toString());
       return {
         id: lecture._id!.toString(),
         title: lecture.title,
@@ -113,6 +117,8 @@ class LectureService {
         isComplete: lecture.isComplete,
         mainImageUrl: lecture.mainImageUrl,
         uploadedAt: lecture.uploadedAt,
+        lessonCount: (lecture.lessons == null) ? 0 : lecture.lessons.length,
+        isTaking: isTaking,
         uploader: {
           uid: user!.uid,
           name: user!.name,
