@@ -184,6 +184,7 @@ const VideoEdit: React.FC = () => {
             <FlatButton onClick={addNewSlide}>
               새로운 문단 추가
             </FlatButton>
+            <S.SlideSpacer />
           </Col>
           <Col sm={3}>
             <S.CameraVideo
