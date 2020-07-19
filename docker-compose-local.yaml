@@ -10,6 +10,7 @@ services:
     volumes:
     - .:/lectus
     environment:
+      - API_URL=
       - GOOGLE_APPLICATION_CREDENTIALS=/lectus/server/credential/esrouc-firebase-credential.json
       - GOOGLE_FIREBASE_STORAGE_BUCKET=
       - GOOGLE_FIREBASE_API_KEY=

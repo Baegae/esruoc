@@ -3,6 +3,7 @@ const process = require('process');
 
 module.exports = {
   env: {
+    API_URL: process.env.API_URL,
     GOOGLE_FIREBASE_STORAGE_BUCKET: process.env.GOOGLE_FIREBASE_STORAGE_BUCKET,
     GOOGLE_FIREBASE_API_KEY: process.env.GOOGLE_FIREBASE_API_KEY,
     GOOGLE_FIREBASE_AUTH_DOMAIN: process.env.GOOGLE_FIREBASE_AUTH_DOMAIN,
