@@ -8,6 +8,7 @@ import FlatButton from '@src/components/common/FlatButton';
 import * as S from './styles';
 import { slideEditorState, EditingState } from '@src/components/VideoEdit/states';
 import { useRecoilState } from 'recoil';
+import produce from 'immer';
 
 interface EditorToolBarProps {
   name: string;
@@ -64,13 +65,34 @@ const Header: React.FC<EditorToolBarProps> = ({
 };
 
 const Buttons: React.FC = () => {
-  const [{ editingState }] = useRecoilState(slideEditorState);
+  const [slideEditor, setSlideEditor] = useRecoilState(slideEditorState);
+  const { editingState } = slideEditor;
+
+  const discardRecording = () => {
+    setSlideEditor((slideEditor) => (produce(slideEditor, draftState => {
+      draftState.editingState = EditingState.Editing;
+      draftState.preview = {
+        videoObjectUrl: '',
+        currentTime: 0,
+      };
+      draftState.slides.forEach(slide => {
+        slide.changes = [];
+        slide.selectionChanges = [];
+      });
+      draftState.slideIndexChange = [];
+    })));
+  };
 
   return (
     <S.ButtonWrapper>
-      <FlatButton>임시저장(?)</FlatButton>
-      <div style={{ width: 24 }} />
-      {editingState === EditingState.Previewing && <CTAButton>업로드</CTAButton>}
+      {editingState === EditingState.Previewing && (
+        <>
+          <div style={{ width: 24 }} />
+          <FlatButton onClick={discardRecording}>취소</FlatButton>
+          <div style={{ width: 24 }} />
+          <CTAButton>업로드</CTAButton>
+        </>
+      )}
     </S.ButtonWrapper>
   );
 };
