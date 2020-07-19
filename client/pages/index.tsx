@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {Col, Container, Row} from 'react-grid-system';
 
 import Illustration from '@src/assets/illustration.svg';
 import Logo from '@src/assets/logo.svg';
 import CTAButton from '@src/components/common/CTAButton';
+import {isLoggedIn, login} from '@src/utils/Login';
+import Router from 'next/router';
 
 const HomeContainer = styled(Container)`
   position: absolute !important;
@@ -50,9 +52,21 @@ const LoginButton = styled(CTAButton)`
 `;
 
 const Home: React.FC = () => {
+  const [loggedIn, setLoggedIn] = useState(true);
+
+  useEffect(() => {
+    const _isLoggedIn = isLoggedIn();
+
+    if (_isLoggedIn) {
+      Router.push('/lecture');
+    } else {
+      setLoggedIn(false);
+    }
+  }, []);
+
   return (
     <HomeContainer>
-      <Row>
+      {!loggedIn && <Row>
         <Col md={6}>
           <Center>
             <IllustImage />
@@ -65,14 +79,18 @@ const Home: React.FC = () => {
               <Title>새로운 방식으로 바꿀 시간입니다.</Title>
               <Title>나만의 코스를 만들어보세요.</Title>
               <div>
-                <LoginButton>로그인하기</LoginButton>
+                <LoginButton onClick={() => googleLogin()}>로그인하기</LoginButton>
               </div>
             </AlignLeftContainer>
           </Center>
         </Col>
-      </Row>
+      </Row>}
     </HomeContainer>
   );
+};
+
+const googleLogin = () => {
+  login();
 };
 
 export default Home;

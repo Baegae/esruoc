@@ -1,43 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import { Container, Row, Col } from 'react-grid-system';
 
-import * as firebase from 'firebase';
-
 import * as S from './styles';
-import axiosInstance, {deleteAccessToken, getUserInfo} from '@src/utils/ApiRequest';
+import {getUserInfo, isLoggedIn, login, logout} from '@src/utils/Login';
 
 const Navbar: React.FC = () => {
   const [loginLabel, setLoginLabel] = useState('로그인');
 
   const loginOrLogout = () => {
-    if (loginLabel === '로그인') {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      firebase.auth().signInWithPopup(provider).then((result) => {
-        firebase.auth().currentUser!.getIdToken(true).then((idToken) => {
-          axiosInstance.post('/user/login', {
-            googleAccessToken: idToken
-          }).then((result) => {
-            console.log(result);
-          });
-        }).catch((error) => {
-          alert('로그인을 실패했습니다.');
-          console.error(error);
-        });
-      }).catch((error) => {
-        alert('로그인을 실패했습니다.');
-        console.error(error);
-      });
-    } else {
-      const logoutConfirmDialog = confirm('로그아웃 할까요?');
+    if (isLoggedIn()) {
+      const logoutConfirm = confirm('로그아웃 할까요?');
 
-      if (logoutConfirmDialog) {
-        deleteAccessToken();
+      if (logoutConfirm) {
+        logout();
       }
+    } else {
+      login();
     }
-  };
-
-  const isLoggedIn = (): boolean => {
-    return !!getUserInfo();
   };
 
   useEffect(() => {

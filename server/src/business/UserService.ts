@@ -31,9 +31,9 @@ export class UserService {
       uid: userRecord.uid,
       name: userRecord.displayName!,
       email: userRecord.email!,
-      description: '',
       profileImageUrl: userRecord.photoURL!,
-      createdAt: new Date()
+      createdAt: new Date(),
+      description: '이거슨 유저 설명',
     });
   }
 }
