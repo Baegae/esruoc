@@ -39,9 +39,11 @@ export class LectureController {
    *     type: object
    *     properties:
    *       lectures:
-   *         type: object[]
-   *         $ref: '#/definitions/LectureOutput'
    *         description: 강의 정보 array
+   *         type: array
+   *         items:
+   *           type: object
+   *           $ref: '#/definitions/LectureOutput'
    */
 
     /**
@@ -166,13 +168,44 @@ export class LectureController {
     /**
    * @swagger
    * definitions:
-   *   LessonListOutput:
+   *   LectureDetailOutput:
    *     type: object
    *     properties:
-   *       lectures:
-   *         type: object[]
-   *         $ref: '#/definitions/LessonOutput'
-   *         description: 강의 정보 array
+   *       id:
+   *         type: string
+   *         description: 강의 ID
+   *       title:
+   *         type: string
+   *         description: 강의 제목
+   *       description:
+   *         type: string
+   *         description: 강의 세부 설명
+   *       isDraft:
+   *         type: boolean
+   *         description: 강의 draft 여부
+   *       isComplete:
+   *         type: boolean
+   *         description: 강의 완료 여부
+   *       mainImageUrl:
+   *         type: string
+   *         description: 강의 메인 이미지 경로
+   *       uploadedAt:
+   *         type: Date
+   *         description: 강의 제작 날짜
+   *       lessonCount:
+   *         type: number,
+   *         description: 차시 개수
+   *       isTaking:
+   *         type: boolean,
+   *         description: 수강 여부,
+   *       uploader:
+   *         type: object
+   *         description: 제작한 유저 정보
+   *       lessons:
+   *         type: array
+   *         items:
+   *           type: object
+   *           $ref: '#/definitions/LessonOutput'
    */
 
     /**
@@ -216,7 +249,7 @@ export class LectureController {
    *         description: 차시 목록 정보
    *         schema:
    *           type: object
-   *           $ref: '#/definitions/LessonDetailOutput'
+   *           $ref: '#/definitions/LectureDetailOutput'
    */
     @Get('/:lectureId')
     getLessons(@Param('lectureId') lectureId: string): Promise<LectureDetailOutput> {
