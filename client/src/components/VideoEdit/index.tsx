@@ -1,10 +1,10 @@
 import React, { ChangeEventHandler, useEffect } from 'react';
 import RecordRTC from 'recordrtc';
-import { RecoilRoot, useRecoilState } from 'recoil';
+import { RecoilRoot, useRecoilState, useRecoilValue } from 'recoil';
 import produce from 'immer';
 
 import { getCameraMirrorRefCallback } from './utils';
-import { slideEditorState, createNewSlideData, slideState, EditingState } from './states';
+import { slideEditorState, createNewSlideData, slideState, EditingState, previewSlideIndexState } from './states';
 
 import * as S from './styles';
 import Slide from './Slide';
@@ -20,6 +20,13 @@ const VideoEdit: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useRecoilState(
     slideState(currentSlideIndex)
   );
+  const previewSlideIndex = useRecoilValue(previewSlideIndexState);
+  useEffect(() => {
+    if (slideEditor.editingState !== EditingState.Previewing) {
+      return;
+    }
+    console.log('index change plz to ', previewSlideIndex);
+  }, [previewSlideIndex, slideEditor.editingState]);
 
   const videoRefCallback = getCameraMirrorRefCallback();
 
@@ -43,7 +50,13 @@ const VideoEdit: React.FC = () => {
   }, []);
 
   const setCurrentSlideIndex = (index: number) => {
-    setSlideEditor((slideEditor) => ({ ...slideEditor, currentSlideIndex: index }));
+    setSlideEditor((slideEditor) => produce(slideEditor, draftState => {
+      draftState.currentSlideIndex = index;
+      if (draftState.editingState !== EditingState.Recording) {
+        return;
+      }
+      draftState.slideIndexChange.push({ data: index, videoTimestamp: (new Date().getTime() - draftState.recordingStartedAt) / 1000 });
+    }));
   };
 
   // Actions for state
@@ -58,6 +71,7 @@ const VideoEdit: React.FC = () => {
         slide.changes = [];
         slide.selectionChanges = [];
       });
+      draftState.slideIndexChange = [];
     })));
   };
 
@@ -70,6 +84,8 @@ const VideoEdit: React.FC = () => {
     setSlideEditor((state) => produce(state, draftState => {
       draftState.recordingStartedAt = new Date().getTime();
     }));
+    // change에 현재 인덱스 추가
+    setCurrentSlideIndex(slideEditor.currentSlideIndex);
     recorder.startRecording();
   };
 
