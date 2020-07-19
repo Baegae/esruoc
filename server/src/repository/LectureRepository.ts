@@ -26,6 +26,21 @@ class LectureRepository {
       });
     }
 
+    async updateMainImageUrl(id: string, mainImageUrl: string): Promise<LectureDocument> {
+      return new Promise<LectureDocument>((resolve, reject) => {
+        this.lectureSchema.findByIdAndUpdate(
+          {_id: id},
+          {mainImageUrl: mainImageUrl},
+          (err, document) => {
+            if (document == null) {
+              reject('No lecture match the fileter.');
+            } else {
+              resolve(document);
+            }
+          });
+      });
+    }
+
     async saveLesson(lecture: LectureDocument, lesson: Lesson): Promise<LessonDocument> {
         lecture.lessons?.push(lesson);
         const savedLecture = await lecture.save();
