@@ -14,7 +14,6 @@ export class UserService {
       const decodedToken = await admin.auth().verifyIdToken(loginInput.googleAccessToken);
       const uid = decodedToken.uid;
       const userRecord = await admin.auth().getUser(uid);
-      console.log(userRecord);
 
       let user = await this.userRepository.findUserByUid(userRecord.uid) as User;
       if (user == null) {
