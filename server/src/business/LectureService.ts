@@ -29,6 +29,20 @@ class LectureService {
       return {lectures: result};
     }
 
+    async getMyLectures(user: User): Promise<LectureListOutput> {
+      const result: LectureOutput[] = [];
+
+      if (!user.uploadedCourses) {
+        return {lectures: []};
+      }
+      for (const uploadedId of user.uploadedCourses) {
+        const lecture = await this.lectureRepository.getLecture({'_id': new Types.ObjectId(uploadedId)});
+        const output = await this.mapLectureOutput(lecture);
+        result.push(output);
+      }
+      return {lectures: result};
+    }
+
     async createLecture(user: User, lectureMainImage: any, payload: CreateLectureRequest): Promise<CreateLectureResponse> {
       const savedLecture = await this.lectureRepository.saveLecture({
         isComplete: false,
