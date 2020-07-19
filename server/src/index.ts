@@ -17,6 +17,7 @@ const PORT = 8000;
 const swaggerSpec = swaggerConfig;
 const userRepository = new UserRepository();
 const app = createExpressServer({
+  cors: true,
   controllers: [LectureController, UserController, ImageController],
   currentUserChecker: async (action: Action, value?: any) => {
     const token = action.request.headers['authorization'];
