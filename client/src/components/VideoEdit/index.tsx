@@ -25,7 +25,7 @@ export function useScrollEffectToChild<E extends HTMLElement = HTMLElement>(quer
     const elem = container.querySelector(query);
 
     if (!elem) return;
-    elem.scrollIntoView({ block: 'end',  behavior: 'smooth' });
+    elem.scrollIntoView({ block: 'end', behavior: 'smooth' });
 
   }, [query, ready]);
 
@@ -218,8 +218,4 @@ const VideoEdit: React.FC = () => {
   );
 };
 
-export default () => (
-  <RecoilRoot>
-    <VideoEdit />
-  </RecoilRoot>
-);
+export default () => <VideoEdit />;
