@@ -159,12 +159,15 @@ const VideoEdit: React.FC = () => {
         <Row>
           <Col sm={9}>
             {slideEditor.slides.map(({ id }, index) => (
-              <Slide
-                key={id}
-                slideIndex={index}
-                selected={index === highlightedSlideIndex}
-                onFocused={setCurrentSlideIndex}
-              />
+              <div key={id}
+                style={{ opacity: slideEditor.editingState === EditingState.Previewing && index !== highlightedSlideIndex ? 0.3 : 1}}
+              >
+                <Slide
+                  slideIndex={index}
+                  selected={index === highlightedSlideIndex}
+                  onFocused={setCurrentSlideIndex}
+                />
+              </div>
             ))}
             {slideEditor.editingState === EditingState.Editing && <FlatButton onClick={addNewSlide}>
               새로운 문단 추가
@@ -175,7 +178,7 @@ const VideoEdit: React.FC = () => {
             <S.VideoContainer>
               {slideEditor.preview.videoObjectUrl && (
                 <div>
-                  <h2>[DEBUG] Record Preview</h2>
+                  <h2>미리 보기</h2>
                   <S.CameraVideo
                     onTimeUpdate={handlePreviewTimeUpdate}
                     src={slideEditor.preview.videoObjectUrl}
