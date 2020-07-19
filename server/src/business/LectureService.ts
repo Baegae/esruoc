@@ -13,14 +13,14 @@ class CreateLectureService {
 
     async createLecture(user: User, lectureMainImage: any, payload: CreateLectureRequest): Promise<CreateLectureResponse> {
       const savedLecture = await this.lectureRepository.saveLecture({
+        isComplete: false,
+        uploadedAt: new Date(),
         title: payload.title,
         description: payload.description,
-        uploaderId: user.uid,
         lessons: [],
+        uploaderId: user.uid,
         isDraft: false,
-        isComplete: false,
         mainImageUrl: '',
-        uploadedAt: new Date()
       });
 
       await uploadFileToStorage(`lecture/${savedLecture._id}`, 'MainImage', lectureMainImage);
