@@ -252,8 +252,9 @@ export class LectureController {
    *           $ref: '#/definitions/LectureDetailOutput'
    */
     @Get('/:lectureId')
-    getLessons(@Param('lectureId') lectureId: string): Promise<LectureDetailOutput> {
-      return this.lectureService.getLessons(lectureId);
+    getLessons(@Param('lectureId') lectureId: string,
+               @CurrentUser() user: User): Promise<LectureDetailOutput> {
+      return this.lectureService.getLessons(lectureId, user);
     }
 
     /**

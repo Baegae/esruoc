@@ -68,7 +68,7 @@ class LectureService {
       };
     }
 
-    async getLessons(lectureId: string): Promise<LectureDetailOutput> {
+    async getLessons(lectureId: string, user: User): Promise<LectureDetailOutput> {
       const lecture = await this.lectureRepository.getLecture({'_id': new Types.ObjectId(lectureId)});
       const lessons = (lecture as Lecture).lessons;
       const result: LessonOutput[] = [];
@@ -86,6 +86,7 @@ class LectureService {
           lessonCount: output.lessonCount,
           isTaking: output.isTaking,
           uploader: output.uploader,
+          uploadedByMe: user.uid == output.uploader.uid,
           lessons: result
         };
       }
@@ -113,6 +114,7 @@ class LectureService {
         lessonCount: output.lessonCount,
         isTaking: output.isTaking,
         uploader: output.uploader,
+        uploadedByMe: user.uid == output.uploader.uid,
         lessons: result
       };
     }
