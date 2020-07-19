@@ -18,7 +18,7 @@ const LectureCardList: React.FC<LectureCardListProps> = ({ lectures, isManageMod
   lectures.map((lecture) => {
     cards.push(
       <Col md={4}
-        onClick={() => gotoLectureInfo(lecture._id!)}
+        onClick={() => gotoLectureInfo(lecture.id!)}
       >
         <S.Card>
           <S.LectureImage url={lecture.mainImageUrl!} />
@@ -28,7 +28,7 @@ const LectureCardList: React.FC<LectureCardListProps> = ({ lectures, isManageMod
             <S.BottomArea>
               <Row>
                 <Col md={6}>
-                  <S.BottomText>총 {lecture.lessons!.length}차시</S.BottomText>
+                  <S.BottomText>총 {lecture.lessons?.length ?? 0}차시</S.BottomText>
                 </Col>
                 <Col md={6}>
                   <S.BottomText>{getFormatDate(lecture.uploadedAt)} 게시됨</S.BottomText>
@@ -50,17 +50,17 @@ const LectureCardList: React.FC<LectureCardListProps> = ({ lectures, isManageMod
           </S.AddCard>
         </Col>}
       </Row>
+      { lectures.length == 0 && <S.NoLectureText>강의가 없어요 :(</S.NoLectureText> }
     </CardContainer>
   );
 };
 
 const gotoLectureInfo = (lectureId: string) => {
-  Router.push({
-    pathname: `/lecture/${lectureId!}`,
-  });
+  Router.push(`/lecture/${lectureId!}`);
 };
 
-const getFormatDate = (date: Date) => {
+const getFormatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
   const year = date.getFullYear();
   let month: number | string = (1 + date.getMonth());
   month = month >= 10 ? month : '0' + month;

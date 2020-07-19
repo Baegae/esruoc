@@ -10,16 +10,11 @@ import FlatButton from '@src/components/common/FlatButton';
 
 interface LectureLessonListProps {
   lessons: Lesson[];
+  isManageMode?: boolean;
 }
 
-const LectureLessonList: React.FC<LectureLessonListProps> = ({ lessons }) => {
+const LectureLessonList: React.FC<LectureLessonListProps> = ({ lessons, isManageMode = false }) => {
   const router = useRouter();
-  const [isManageMode, setIsManageMode] = useState(false);
-
-  useEffect(() => {
-    const { lectureId } = router.query;
-    console.log(lectureId);
-  }, []);
 
   return (
     <S.ListContainer>

@@ -1,6 +1,7 @@
 import Lesson from './Lesson';
 
 interface Lecture {
+    id?: string;
     _id?: string;
     // 강의 제목
     title: string;
@@ -12,6 +13,8 @@ interface Lecture {
     lessons?: Lesson[];
     // 임시 저장 상태
     isDraft: boolean;
+    // 이 강의를 내가 만들었나
+    uploadedByMe: boolean;
     // 완료 여부
     isComplete: boolean;
     // 대표 이미지 URL
