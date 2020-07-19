@@ -33,7 +33,7 @@ class LectureRepository {
           {mainImageUrl: mainImageUrl},
           (err, document) => {
             if (document == null) {
-              reject('No lecture match the fileter.');
+              reject('No lecture match the filter.');
             } else {
               resolve(document);
             }
