@@ -7,6 +7,8 @@ import {
   editorTextDataState,
   editorPreviewHighlightState,
   slideState,
+  slideEditorState,
+  EditingState,
 } from '../states';
 
 import * as S from './styles';
@@ -23,6 +25,7 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
     editorPreviewHighlightState(slideIndex)
   );
 
+  const { editingState } = useRecoilValue(slideEditorState);
   const [currentSlide, setCurrentSlide] = useRecoilState(
     slideState(slideIndex)
   );
@@ -57,7 +60,10 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
 
   const handleTextDataChange = useCallback<(data: OutputData) => void>(
     (textData) => {
-      if (!currentSlide.isRecording) {
+      if (editingState === EditingState.Previewing) {
+        return;
+      }
+      if (editingState === EditingState.Editing) {
         return;
       }
       addTextChange(textData);
@@ -66,7 +72,7 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
   );
 
   const handleSelectionChange = (rects?: EditorTextSelection[]) => {
-    if (!currentSlide.isRecording) {
+    if (editingState !== EditingState.Recording) {
       return;
     }
     addSelectionChange(rects);
