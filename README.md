@@ -27,20 +27,14 @@ $ yarn workspace shared|client|server add library-name # 뒤부터는 yarn add �
 
 <br>
 
-## 클라이언트 프로젝트 실행하는 방법
+## 프로젝트 실행 방법
 
-```bash
-cd client
-yarn dev
+esruoc 프로젝트는 개발 편의를 위해 모두 하나의 도커 이미지로 패킹되어 있습니다.
+Github Packages 로 이미지를 배포했으며, 해당 이미지를 실행하기 위해서는 credential 파일과 환경변수가 필요합니다.
+심사위원분들께서 실제 테스트를 원하신다면, 팀에게 연락을 주시면 환경변수 파일을 제공해드리겠습니다.
+
+
+
 ```
-
-<br>
-
-## 백엔드 프로젝트 실행하는 방법
-
-프로젝트를 실행하기 위해서는 credential 파일과 환경변수가 필요합니다.
-
-```bash
 docker-compose -f ./docker-compose-local.yaml up
 ```
-
