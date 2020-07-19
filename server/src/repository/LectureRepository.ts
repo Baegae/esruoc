@@ -14,6 +14,18 @@ class LectureRepository {
       return await this.lectureSchema.create(lecture);
     }
 
+    async getAllLectures(): Promise<LectureDocument[]> {
+      return new Promise<LectureDocument[]>((resolve, reject) => {
+        this.lectureSchema.find((err, document) => {
+          if (document == null) {
+            reject('No lectures.');
+          } else {
+            resolve(document);
+          }
+        });
+      });
+    }
+
     async getLecture(filter: any): Promise<LectureDocument> {
       return new Promise<LectureDocument>((resolve, reject) => {
         this.lectureSchema.findOne(filter, (err, document) => {

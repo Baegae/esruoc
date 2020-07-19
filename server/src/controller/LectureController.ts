@@ -3,33 +3,38 @@ import LectureService from '@business/LectureService';
 import CreateLectureResponse from '@shared/response/CreateLectureResponse';
 import CreateLessonResponse from '@shared/response/CreateLessonResponse';
 import User from '@shared/entity/User';
+import LectureOutput from '@shared/response/LectureOutput';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Lecture
+ *   description: 강의 객체
+ * definitions:
+ *   Lecture:
+ *     type: object
+ *     properties:
+ *       id:
+ *         type: string
+ *         description: 강의 ID
+ *       title:
+ *         type: string
+ *         description: 강의 제목
+ *       description:
+ *         type: string
+ *         description: 강의 설명
+ *       mainImageUrl:
+ *         type: string
+ *         description: 강의 이미지 다운로드 URL
+ */
 @JsonController('/lecture')
 export class LectureController {
     lectureService = new LectureService();
 
-    /**
-     * @swagger
-     * tags:
-     *   name: Lecture
-     *   description: 강의 객체
-     * definitions:
-     *   Lecture:
-     *     type: object
-     *     properties:
-     *       id:
-     *         type: string
-     *         description: 강의 ID
-     *       title:
-     *         type: string
-     *         description: 강의 제목
-     *       description:
-     *         type: string
-     *         description: 강의 설명
-     *       mainImageUrl:
-     *         type: string
-     *         description: 강의 이미지 다운로드 URL
-     */
+    @Get('')
+    getLectures(): Promise<{ lectures: Promise<LectureOutput>[] }> {
+      return this.lectureService.getLectures();
+    }
 
     /**
      * @swagger
@@ -73,7 +78,6 @@ export class LectureController {
         }
       );
     }
-
 
     /**
      * @swagger

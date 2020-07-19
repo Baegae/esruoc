@@ -7,9 +7,23 @@ import CreateLessonResponse from '@shared/response/CreateLessonResponse';
 import {Types} from 'mongoose';
 import {NotFoundError} from 'routing-controllers';
 import User from '@shared/entity/User';
+import Lecture from '@shared/entity/Lecture';
+import LectureOutput from '@shared/response/LectureOutput';
+import UserRepository from '@repository/UserRepository';
 
 class CreateLectureService {
     lectureRepository = new LectureRepository();
+    userRepository = new UserRepository();
+
+    async getLectures(): Promise<{ lectures: Promise<LectureOutput>[] }> {
+      const lectureDocuments = await this.lectureRepository.getAllLectures();
+      return {
+        lectures: lectureDocuments.map((lectureDocument) => {
+          const lecture = lectureDocument as Lecture;
+          return this.mapLectureOutput(lecture);
+        })
+      };
+    }
 
     async createLecture(user: User, lectureMainImage: any, payload: CreateLectureRequest): Promise<CreateLectureResponse> {
       const savedLecture = await this.lectureRepository.saveLecture({
@@ -60,6 +74,26 @@ class CreateLectureService {
       };
 
       return result;
+    }
+
+    private async mapLectureOutput(lecture: Lecture): Promise<LectureOutput> {
+      const user = await this.userRepository.findUserByUid(lecture.uploaderId);
+      return {
+        id: lecture._id!,
+        title: lecture.title,
+        description: lecture.description,
+        isDraft: lecture.isDraft,
+        isComplete: lecture.isComplete,
+        mainImageUrl: lecture.mainImageUrl,
+        uploadedAt: lecture.uploadedAt,
+        uploader: {
+          uid: user!.uid,
+          name: user!.name,
+          email: user!.email,
+          description: user!.description,
+          profileImageUrl: user!.profileImageUrl
+        }
+      };
     }
 }
 
