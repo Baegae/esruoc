@@ -124,6 +124,7 @@ const getNumRange = (n: number) => [...Array(n)].map((_, index) => index);
 const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, selection }) => {
   const editorRef = useRef<EditorJS | null>(null);
   const editorElRef = useRef<HTMLDivElement>(null);
+  const editorDataRef = useRef<OutputData | undefined>(undefined);
 
   useLayoutEffect(() => {
     const editor = new EditorJS(
@@ -171,6 +172,7 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
     if (!data) {
       return;
     }
+    if (data === editorDataRef.current) return;
     editorRef.current?.isReady.then(() => {
       editorRef.current?.render(data);
     });
@@ -180,6 +182,7 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
     const observer = new MutationObserver(() => {
       editorRef.current?.isReady.then(() => editorRef.current?.save()).then(data => {
         data && onChange(data);
+        editorDataRef.current = data;
       });
     });
 
