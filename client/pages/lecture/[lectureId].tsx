@@ -164,4 +164,4 @@ const LectureDetailPage = () => {
   );
 };
 
-export default withRouter(LectureDetailPage);
+export default LectureDetailPage;
