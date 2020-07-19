@@ -48,18 +48,17 @@ const VideoEdit: React.FC = () => {
 
   // Actions for state
   const discardRecording = () => {
-    setSlideEditor((slideEditor) => ({
-      ...slideEditor, editingState: EditingState.Editing, preview: {
+    setSlideEditor((slideEditor) => (produce(slideEditor, draftState => {
+      draftState.editingState = EditingState.Editing;
+      draftState.preview = {
         videoObjectUrl: '',
-        currentTime: 0
-      }
-    }));
-    // TODO: 전부 지우기
-    setCurrentSlide((state) => ({
-      ...state,
-      changes: [],
-      selectionChanges: [],
-    }));
+        currentTime: 0,
+      };
+      draftState.slides.forEach(slide => {
+        slide.changes = [];
+        slide.selectionChanges = [];
+      });
+    })));
   };
 
   const startRecording = () => {
@@ -76,7 +75,6 @@ const VideoEdit: React.FC = () => {
 
   const stopRecording = () => {
     recorder.stopRecording(() => {
-      console.log(recorder.toURL());
       setPreviewUrl(recorder.toURL());
       setSlideEditor((slideEditor) => ({ ...slideEditor, editingState: EditingState.Previewing }));
       // uploadVideoToServer(recorder.getBlob()).then(() => {
