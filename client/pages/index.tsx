@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import {Container} from 'react-grid-system';
+
 
 const TestHeader = styled.h1`
   color: ${({theme}) => theme.colors.text.default};
@@ -23,12 +25,12 @@ const TestAccentColor = styled.div`
 
 const Home: React.FC = () => {
   return (
-    <div>
+    <Container>
       <TestHeader>안녕하세여여어어어ㅓ</TestHeader>
       <TestCaption>너무 반갑다는 뜻;;</TestCaption>
       <TestPrimaryColor />
       <TestAccentColor />
-    </div>
+    </Container>
   );
 };
 
