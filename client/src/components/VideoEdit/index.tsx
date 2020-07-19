@@ -1,6 +1,6 @@
 import React, { ChangeEventHandler, useEffect, useRef } from 'react';
 import RecordRTC from 'recordrtc';
-import { RecoilRoot, useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import produce from 'immer';
 
 import { getCameraMirrorRefCallback } from './utils';
@@ -81,27 +81,12 @@ const VideoEdit: React.FC = () => {
   };
 
   // Actions for state
-  const discardRecording = () => {
-    setSlideEditor((slideEditor) => (produce(slideEditor, draftState => {
-      draftState.editingState = EditingState.Editing;
-      draftState.preview = {
-        videoObjectUrl: '',
-        currentTime: 0,
-      };
-      draftState.slides.forEach(slide => {
-        slide.changes = [];
-        slide.selectionChanges = [];
-      });
-      draftState.slideIndexChange = [];
-    })));
-  };
 
   const startRecording = () => {
     if (slideEditor.editingState === EditingState.Recording) {
       return;
     }
-    discardRecording();
-    setSlideEditor({ ...slideEditor, editingState: EditingState.Recording });
+    setSlideEditor(slideEditor => ({ ...slideEditor, editingState: EditingState.Recording }));
     setSlideEditor((state) => produce(state, draftState => {
       draftState.recordingStartedAt = new Date().getTime();
     }));
@@ -216,7 +201,6 @@ const VideoEdit: React.FC = () => {
                 </>
               )}
             </S.VideoContainer>
-            {slideEditor.editingState === EditingState.Previewing && <button onClick={discardRecording}>discard</button>}
           </Col>
         </Row>
       </Container>
