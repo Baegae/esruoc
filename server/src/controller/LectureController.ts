@@ -3,7 +3,7 @@ import LectureService from '@business/LectureService';
 import CreateLectureResponse from '@shared/response/CreateLectureResponse';
 import CreateLessonResponse from '@shared/response/CreateLessonResponse';
 import User from '@shared/entity/User';
-import LectureOutput from '@shared/response/LectureOutput';
+import LectureListOutput from '@shared/response/LectureListOutput';
 
 /**
  * @swagger
@@ -31,9 +31,67 @@ import LectureOutput from '@shared/response/LectureOutput';
 export class LectureController {
     lectureService = new LectureService();
 
+    /**
+   * @swagger
+   * definitions:
+   *   LectureListOutput:
+   *     type: object
+   *     properties:
+   *       lectures:
+   *         type: object[]
+   *         $ref: '#/definitions/LectureOutput'
+   *         description: 강의 정보 array
+   */
+
+    /**
+   * @swagger
+   * definitions:
+   *   LectureOutput:
+   *     type: object
+   *     properties:
+   *       id:
+   *         type: string
+   *         description: 강의 ID
+   *       title:
+   *         type: string
+   *         description: 강의 제목
+   *       description:
+   *         type: string
+   *         description: 강의 세부 설명
+   *       isDraft:
+   *         type: boolean
+   *         description: 강의 draft 여부
+   *       isComplete:
+   *         type: boolean
+   *         description: 강의 완료 여부
+   *       mainImageUrl:
+   *         type: string
+   *         description: 강의 메인 이미지 경로
+   *       uploadedAt:
+   *         type: Date
+   *         description: 강의 제작 날짜
+   *       uploader:
+   *         type: object
+   *         description: 제작한 유저 정보
+   */
+
+    /**
+   * @swagger
+   * /lecture:
+   *   get:
+   *     summary: 강의 목록 제공
+   *
+   *     tags: [Lecture]
+   *     responses:
+   *       200:
+   *         description: 강의 목록 정보
+   *         schema:
+   *           type: object
+   *           $ref: '#/definitions/LectureListOutput'
+   */
     @Get('')
-    getLectures(): Promise<{ lectures: Promise<LectureOutput>[] }> {
-      return this.lectureService.getLectures();
+    async getLectures(): Promise<LectureListOutput> {
+      return await this.lectureService.getLectures();
     }
 
     /**
