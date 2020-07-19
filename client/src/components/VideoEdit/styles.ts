@@ -1,5 +1,10 @@
 import styled from 'styled-components';
 
+export const VideoContainer = styled.div`
+  position: sticky;
+  top: 6rem;
+`;
+
 export const CameraVideo = styled.video`
   transform: scaleX(-1);
   width: 100%;
