@@ -4,6 +4,7 @@ import CreateLectureResponse from '@shared/response/CreateLectureResponse';
 import CreateLessonResponse from '@shared/response/CreateLessonResponse';
 import User from '@shared/entity/User';
 import LectureListOutput from '@shared/response/LectureListOutput';
+import LessonListOutput from '@shared/response/LessonListOutput';
 
 /**
  * @swagger
@@ -135,6 +136,66 @@ export class LectureController {
           title: title, description: description
         }
       );
+    }
+
+    /**
+   * @swagger
+   * definitions:
+   *   LessonListOutput:
+   *     type: object
+   *     properties:
+   *       lectures:
+   *         type: object[]
+   *         $ref: '#/definitions/LessonOutput'
+   *         description: 강의 정보 array
+   */
+
+    /**
+   * @swagger
+   * definitions:
+   *   LessonOutput:
+   *     type: object
+   *     properties:
+   *       id:
+   *         type: string
+   *         description: 차시 ID
+   *       title:
+   *         type: string
+   *         description: 차시 제목
+   *       description:
+   *         type: string
+   *         description: 차시 세부 설명
+     *     duration:
+     *       type: number
+     *       description: 차시 영상 길이
+     *     content:
+     *       type: string
+     *       description: 차시 수업자료
+     *     videoUrl:
+     *       type: string
+     *       description: 차시 비디오 Url
+     *     uploadedAt:
+     *       type: Date
+     *       description: 차시 업로드 날짜
+   */
+
+    /**
+   * @swagger
+   * /lecture/{lectureId}:
+   *   get:
+   *     summary: 강의의 차시 목록 제공
+   *
+   *     tags: [Lecture]
+   *     responses:
+   *       200:
+   *         description: 차시 목록 정보
+   *         schema:
+   *           type: object
+   *           $ref: '#/definitions/LessonListOutput'
+   */
+    @Get('/:lectureId')
+    getLessons(@Param('lectureId') lectureId: string): Promise<LessonListOutput> {
+      return this.lectureService.getLessons(lectureId);
     }
 
     /**

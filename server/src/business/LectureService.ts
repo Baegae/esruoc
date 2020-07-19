@@ -11,6 +11,8 @@ import Lecture from '@shared/entity/Lecture';
 import LectureOutput from '@shared/response/LectureOutput';
 import UserRepository from '@repository/UserRepository';
 import LectureListOutput from '@shared/response/LectureListOutput';
+import LessonListOutput from '@shared/response/LessonListOutput';
+import LessonOutput from '@shared/response/LessonOutput';
 
 class CreateLectureService {
     lectureRepository = new LectureRepository();
@@ -24,9 +26,7 @@ class CreateLectureService {
         const output = await this.mapLectureOutput(lecture);
         result.push(output);
       }
-      return {
-        lectures: result
-      };
+      return {lectures: result};
     }
 
     async createLecture(user: User, lectureMainImage: any, payload: CreateLectureRequest): Promise<CreateLectureResponse> {
@@ -52,6 +52,29 @@ class CreateLectureService {
         description: savedLecture.description,
         mainImageUrl
       };
+    }
+
+    async getLessons(lectureId: string): Promise<LessonListOutput> {
+      const lecture = await this.lectureRepository.getLecture({'_id': new Types.ObjectId(lectureId)});
+      const lessons = (lecture as Lecture).lessons;
+      const result: LessonOutput[] = [];
+
+      if (lessons === undefined) {
+        return {lessons: result};
+      }
+
+      for (const lesson of lessons) {
+        result.push({
+          id: lesson.id!,
+          title: lesson.title,
+          description: lesson.description,
+          duration: lesson.duration,
+          content: lesson.content,
+          videoUrl: lesson.videoUrl,
+          uploadedAt: lesson.uploadedAt
+        });
+      }
+      return {lessons: result};
     }
 
     async createLesson(lectureId: string, videoFile: any, lesson: Lesson): Promise<CreateLessonResponse> {
