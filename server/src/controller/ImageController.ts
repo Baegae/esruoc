@@ -1,20 +1,22 @@
-import {JsonController, Param, Post, QueryParam, UploadedFile} from 'routing-controllers';
+import {Body, JsonController, Post, Res, UploadedFile} from 'routing-controllers';
 import {ImageService} from '@business/ImageService';
 import ImageOutput from '@shared/response/ImageOutput';
+import FetchUrlInput from '@shared/request/FetchUrlInput';
 
 @JsonController()
 export class ImageController {
   private imageService = new ImageService();
 
   @Post('/uploadFile')
-  uploadFile(
+  async uploadFile(
     @UploadedFile('image', {required: true}) image: any
   ): Promise<ImageOutput> {
+    console.log(image);
     return this.imageService.uploadImage(image);
   }
 
   @Post('/fetchUrl')
-  fetchUrl(@QueryParam('url') url: string): Promise<ImageOutput> {
-    return this.imageService.fetchUrl(url);
+  fetchUrl(@Body() fetchUrlInput: FetchUrlInput): Promise<ImageOutput> {
+    return this.imageService.fetchUrl(fetchUrlInput.url);
   }
 }
