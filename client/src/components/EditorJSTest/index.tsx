@@ -52,6 +52,7 @@ const editorJsConfig: EditorConfig = {
       tools: {
         image: {
           Caption: '설명',
+          'Select an Image': '사진 선택...',
         },
         list: {
           Unordered: '순서가 없는 리스트',
