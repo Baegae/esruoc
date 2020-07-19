@@ -2,8 +2,7 @@ import {BodyParam, CurrentUser, Get, JsonController, Param, Post, UploadedFile} 
 import LectureService from '@business/LectureService';
 import CreateLectureResponse from '@shared/response/CreateLectureResponse';
 import CreateLessonResponse from '@shared/response/CreateLessonResponse';
-import LectureOutputList from '../../../shared/src/response/LectureOutputList';
-import User from '../../../shared/src/entity/User';
+import User from '@shared/entity/User';
 
 @JsonController('/lecture')
 export class LectureController {
