@@ -165,18 +165,18 @@ export class LectureController {
    *       description:
    *         type: string
    *         description: 차시 세부 설명
-     *     duration:
-     *       type: number
-     *       description: 차시 영상 길이
-     *     content:
-     *       type: string
-     *       description: 차시 수업자료
-     *     videoUrl:
-     *       type: string
-     *       description: 차시 비디오 Url
-     *     uploadedAt:
-     *       type: Date
-     *       description: 차시 업로드 날짜
+   *       duration:
+   *         type: number
+   *         description: 차시 영상 길이
+   *       content:
+   *         type: string
+   *         description: 차시 수업자료
+   *       videoUrl:
+   *         type: string
+   *         description: 차시 비디오 Url
+   *       uploadedAt:
+   *         type: Date
+   *         description: 차시 업로드 날짜
    */
 
     /**
