@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useEffect } from 'react';
+import React, { ChangeEventHandler, useEffect, useRef } from 'react';
 import RecordRTC from 'recordrtc';
 import { RecoilRoot, useRecoilState, useRecoilValue } from 'recoil';
 import produce from 'immer';
@@ -14,10 +14,29 @@ import VideoRecordingController from './VideoRecordingController';
 
 let recorder: RecordRTC;
 
+export function useScrollEffectToChild<E extends HTMLElement = HTMLElement>(query: string, ready: boolean) {
+
+  const containerRef = useRef<E | undefined>();
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!ready || !container) return;
+
+    const elem = container.querySelector(query);
+
+    if (!elem) return;
+    elem.scrollIntoView({ block: 'end',  behavior: 'smooth' });
+
+  }, [query, ready]);
+
+  return containerRef;
+}
+
+
 const VideoEdit: React.FC = () => {
   const [slideEditor, setSlideEditor] = useRecoilState(slideEditorState);
   const { currentSlideIndex } = slideEditor;
-  const [currentSlide, setCurrentSlide] = useRecoilState(
+  const [currentSlide] = useRecoilState(
     slideState(currentSlideIndex)
   );
   const previewSlideIndex = useRecoilValue(previewSlideIndexState);
@@ -27,6 +46,8 @@ const VideoEdit: React.FC = () => {
     }
     console.log('index change plz to ', previewSlideIndex);
   }, [previewSlideIndex, slideEditor.editingState]);
+  const slideListRef = useScrollEffectToChild(`[data-slide-index="${previewSlideIndex}"]`, previewSlideIndex !== undefined);
+  slideListRef.current = document.documentElement;
 
   const videoRefCallback = getCameraMirrorRefCallback();
 
@@ -145,6 +166,8 @@ const VideoEdit: React.FC = () => {
     setPreviewCurrentTime(event.currentTarget.currentTime);
   };
 
+  const highlightedSlideIndex = (slideEditor.editingState === EditingState.Previewing ? previewSlideIndex : currentSlideIndex);
+
   return (
     <div style={{ position: 'relative', zIndex: 0 }}>
       <Container>
@@ -154,7 +177,7 @@ const VideoEdit: React.FC = () => {
               <Slide
                 key={id}
                 slideIndex={index}
-                selected={index === currentSlideIndex}
+                selected={index === highlightedSlideIndex}
                 onFocused={setCurrentSlideIndex}
               />
             ))}

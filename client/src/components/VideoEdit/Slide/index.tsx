@@ -75,7 +75,7 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
       }
       addTextChange(textData);
     },
-  [addTextChange, currentSlide.isRecording, editingState]
+  [addTextChange, editingState]
   );
 
   const handleSelectionChange = (rects?: EditorTextSelection[]) => {
@@ -94,6 +94,7 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
 
   return (
     <S.CardView
+      data-slide-index={slideIndex}
       isSelected={selected || false}
       onFocus={handleFocused}
     >
