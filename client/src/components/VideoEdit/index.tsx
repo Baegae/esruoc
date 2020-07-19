@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useEffect, useRef } from 'react';
+import React, { ChangeEventHandler, useEffect, useRef, useCallback, useState } from 'react';
 import RecordRTC from 'recordrtc';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import produce from 'immer';
@@ -9,8 +9,13 @@ import { slideEditorState, createNewSlideData, slideState, EditingState, preview
 import * as S from './styles';
 import Slide from './Slide';
 import { Container, Row, Col } from 'react-grid-system';
+import moment from 'moment';
 import FlatButton from '../common/FlatButton';
 import VideoRecordingController from './VideoRecordingController';
+import Slider from '@material-ui/core/Slider';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
+import { withStyles } from '@material-ui/core/styles';
 
 let recorder: RecordRTC;
 
@@ -50,6 +55,23 @@ const VideoEdit: React.FC = () => {
   slideListRef.current = document.documentElement;
 
   const videoRefCallback = getCameraMirrorRefCallback();
+  const [previewDuration, setPreviewDuration] = useState(0);
+  const [playing, setPlaying] = useState(false);
+
+  const registerPreviewVideoEl = useCallback<(el: HTMLVideoElement) => void>((el) => {
+    previewVideoElRef.current = el;
+    el.addEventListener('canplaythrough', () => {
+      setPreviewDuration(el.duration);
+    });
+    el.addEventListener('play', () => {
+      setPlaying(true);
+    });
+    el.addEventListener('pause', () => {
+      setPlaying(false);
+    });
+  }, []);
+
+  const previewVideoElRef = useRef<HTMLVideoElement | undefined>();
 
   // a state observer for debugging
   useEffect(() => {
@@ -160,7 +182,7 @@ const VideoEdit: React.FC = () => {
           <Col sm={9}>
             {slideEditor.slides.map(({ id }, index) => (
               <div key={id}
-                style={{ opacity: slideEditor.editingState === EditingState.Previewing && index !== highlightedSlideIndex ? 0.3 : 1}}
+                style={{ opacity: slideEditor.editingState === EditingState.Previewing && index !== highlightedSlideIndex ? 0.3 : 1 }}
               >
                 <Slide
                   slideIndex={index}
@@ -180,6 +202,7 @@ const VideoEdit: React.FC = () => {
                 <div>
                   <h2>미리 보기</h2>
                   <S.CameraVideo
+                    ref={registerPreviewVideoEl}
                     onTimeUpdate={handlePreviewTimeUpdate}
                     src={slideEditor.preview.videoObjectUrl}
                     controls
@@ -207,8 +230,60 @@ const VideoEdit: React.FC = () => {
           </Col>
         </Row>
       </Container>
+      {slideEditor.editingState === EditingState.Previewing && previewDuration > 0 && (
+        <S.BottomBar>
+          <Container>
+            <Row>
+              <Col sm={12}>
+                <CustomSlider
+                  className="audio-slider"
+                  step={0.2}
+                  min={0}
+                  max={previewDuration}
+                  value={slideEditor.preview.currentTime}
+                  onChange={(_, value) => {
+                    // TODO: Change
+                    const videoEl = previewVideoElRef.current;
+                    if (videoEl) {
+                      videoEl.currentTime = value as number;
+                    }
+                  }}
+                />
+              </Col>
+            </Row>
+
+            <Row>
+              <Col sm={2}>
+                <S.AudioTimeWrapper style={{ color: 'white' }}>
+                  {moment.unix(slideEditor.preview.currentTime).format('mm:ss')} / {moment.unix(previewDuration).format('mm:ss')}
+                </S.AudioTimeWrapper>
+              </Col>
+              <Col sm={8} />
+              <Col sm={2}>
+                {!playing &&
+                  <S.AudioButtonWrapper onClick={() => { previewVideoElRef.current?.play(); }}>
+                    <PlayArrowIcon style={{ color: 'white' }} />
+                  </S.AudioButtonWrapper>
+                }
+                {playing &&
+                  <S.AudioButtonWrapper onClick={() => { previewVideoElRef.current?.pause(); }}>
+                    <PauseIcon style={{ color: 'white' }} />
+                  </S.AudioButtonWrapper>
+                }
+              </Col>
+            </Row>
+          </Container>
+        </S.BottomBar>
+      )}
     </div>
   );
 };
 
 export default () => <VideoEdit />;
+
+const CustomSlider = withStyles({
+  root: {
+    color: '#00ffb6',
+    height: 8,
+  },
+})(Slider);
