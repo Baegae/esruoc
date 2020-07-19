@@ -6,7 +6,7 @@ import Lesson from '@shared/entity/Lesson';
 import CreateLessonResponse from '@shared/response/CreateLessonResponse';
 import {Types} from 'mongoose';
 import {NotFoundError} from 'routing-controllers';
-import User from '../../../shared/src/entity/User';
+import User from '@shared/entity/User';
 
 class CreateLectureService {
     lectureRepository = new LectureRepository();
