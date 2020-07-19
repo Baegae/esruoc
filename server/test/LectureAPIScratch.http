@@ -1,23 +1,23 @@
 # Lecture 생성
 POST http://127.0.0.1:8000/lecture
 Content-Type: multipart/form-data; boundary=boundary
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJFMFVScDZ5SW5sUXNtRnU4YW5uUm5TU2NBNFQyIiwibmFtZSI6IuyYpOyKueykgCIsImVtYWlsIjoib3NqdW55MTFAZ21haWwuY29tIiwicHJvZmlsZUltYWdlVXJsIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2hSOXFSaXdIQWozeWxiekt6WHpLY3RHaHh4Z2pERWZNYmpkNHBNSDdvIiwiaWF0IjoxNTk1MTQzNzY1LCJleHAiOjE1OTU3NDg1NjV9.mbpl4v-2GlspCmQzD5Wl1h9w8A4r6wQPEraYCGnF1-U
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJKajV4U1l4QjJvaHpiVU16R1ROaU80RGtqZzgyIiwibmFtZSI6IlNhbmdodW4gTGVlIiwiZW1haWwiOiJzYW5naHVuQHNjYXR0ZXJsYWIuY28ua3IiLCJwcm9maWxlSW1hZ2VVcmwiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS0vQU9oMTRHalkwREtOMzZwODJ0MjNma3pjQ0ZMRVZLMEZ5SldpbVdwNEJHb2oiLCJpYXQiOjE1OTUxNTgwODEsImV4cCI6MTU5NTc2Mjg4MX0.zLib2f36v9YJefpUZJC02ikjbAzwIG4wQqZdpd5EQqI
 
 --boundary
 Content-Disposition: form-data; name="title";
 
-강의 제목 1
+[입문~활용] 데이터 분석을 위한 SQL 시리즈 3종
 
 --boundary
 Content-Disposition: form-data; name="description";
 
-이것은 강의에 대한 설명입니당
+SQL 기초 이론을 배우고, 해커랭크 문제 10개를 함께 풀어봅니다.
 
 --boundary
 Content-Disposition: form-data; name="lectureMainImage"; filename="mainimage.jpg"
-Content-Type: image/jpg
+Content-Type: image/png
 
-< /Users/dsa28s/Downloads/IMG_0308.jpg
+< /Users/dsa28s/Desktop/roadmap-92.png
 
 --boundary--
 
@@ -25,34 +25,35 @@ Content-Type: image/jpg
 ###
 
 # 차시 생성
-POST http://127.0.0.1:8000/lecture/5f12fabea09e7b05995870f0/lesson
+POST http://127.0.0.1:8000/lecture/5f142e5292dfd00070f9d0a0/lesson
 Content-Type: multipart/form-data; boundary=boundary
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJKajV4U1l4QjJvaHpiVU16R1ROaU80RGtqZzgyIiwibmFtZSI6IlNhbmdodW4gTGVlIiwiZW1haWwiOiJzYW5naHVuQHNjYXR0ZXJsYWIuY28ua3IiLCJwcm9maWxlSW1hZ2VVcmwiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS0vQU9oMTRHalkwREtOMzZwODJ0MjNma3pjQ0ZMRVZLMEZ5SldpbVdwNEJHb2oiLCJpYXQiOjE1OTUxNTgwODEsImV4cCI6MTU5NTc2Mjg4MX0.zLib2f36v9YJefpUZJC02ikjbAzwIG4wQqZdpd5EQqI
 
 --boundary
 Content-Disposition: form-data; name="title";
 
-차시 제목 1
+과연 차시가 잘 될까?
 
 --boundary
 Content-Disposition: form-data; name="description";
 
-이것은 차시에 대한 설명입니당
+이거 나오면 진짜 킹왕짱 백엔드 잘한거다;; 준비된 남자 오!승!준!
 
 --boundary
 Content-Disposition: form-data; name="content";
 
-프론트에서 준 타임라인 콘텐츠 입니당
+{'sdfsdf'}
 
 --boundary
 Content-Disposition: form-data; name="duration";
 
-1234567
+24000
 
 --boundary
 Content-Disposition: form-data; name="lessonVideo"; filename="mainimage.jpg"
 Content-Type: video/mp4
 
-< /Users/dsa28s/Downloads/IMG_0308.jpg
+< /Users/dsa28s/Downloads/index.webm
 
 --boundary--
 

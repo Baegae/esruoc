@@ -8,6 +8,10 @@ const LectureInfoHeader: React.FC<Lecture> = ({
   title,
   description,
   uploaderId,
+  mainImageUrl,
+  uploadedAt,
+  uploader,
+  lessonCount
 }) => {
   return (
     <Container>
@@ -16,16 +20,16 @@ const LectureInfoHeader: React.FC<Lecture> = ({
         align="center"
       >
         <Col sm={6}>
-          <S.LectureImage url="https://source.unsplash.com/random/1920x1080" />
+          <S.LectureImage url={mainImageUrl} />
         </Col>
         <Col sm={6}>
           <S.InfoWrapper>
             <S.LectureTitle>{title}</S.LectureTitle>
             <S.LectureDescription>{description}</S.LectureDescription>
             <S.UploaderWrapper>
-              <S.UploaderProfileImage url="https://source.unsplash.com/random/60x60" />
+              <S.UploaderProfileImage url={uploader.profileImageUrl} />
               <div>
-                <S.UploaderName>{uploaderId}</S.UploaderName>
+                <S.UploaderName>{uploader.name}</S.UploaderName>
                 <S.UploaderJob>프론트엔드 엔지니어</S.UploaderJob>
               </div>
             </S.UploaderWrapper>
@@ -35,11 +39,11 @@ const LectureInfoHeader: React.FC<Lecture> = ({
           <Row>
             <Col sm={8}>
               <S.LectureSubTitle>강의 제작 날짜</S.LectureSubTitle>
-              <S.LectureSubValue>2020년 3월</S.LectureSubValue>
+              <S.LectureSubValue>{getFormatDate(uploadedAt)}</S.LectureSubValue>
             </Col>
             <Col sm={4}>
               <S.LectureSubTitle>총 차시</S.LectureSubTitle>
-              <S.LectureSubValue>12 차시</S.LectureSubValue>
+              <S.LectureSubValue>{lessonCount} 차시</S.LectureSubValue>
             </Col>
           </Row>
         </S.LectureSubInfoContainer>
@@ -51,6 +55,14 @@ const LectureInfoHeader: React.FC<Lecture> = ({
       </S.AbsoluteRow>
     </Container>
   );
+};
+
+const getFormatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  let month: number | string = (1 + date.getMonth());
+  month = month >= 10 ? month : '0' + month;
+  return  year + '년 ' + month + '월';
 };
 
 export default LectureInfoHeader;

@@ -50,6 +50,9 @@ export const LectureCardTitle = styled.p`
   font-size: 1.5rem;
   word-break: break-word;
   margin-top: 5px;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
 `;
 
 export const BottomArea = styled.div`
@@ -73,4 +76,12 @@ export const AddLectureText = styled.p`
   font-size: 1.5rem;
   color: rgba(51, 58, 61, 0.55);
   margin-top: 24px;
+`;
+
+export const NoLectureText = styled.p`
+  font-size: 20px;
+  color: rgba(51, 58, 61, 0.55);
+  margin-top: 24px;
+  text-align: center;
+  margin-bottom: 100px;
 `;
