@@ -95,8 +95,11 @@ export const slideState = selectorFamily<SlideState, number>({
 export const latestTextChangeState = selectorFamily<OutputData, number>({
   key: 'latestTextChangeState',
   get: slideIndex => ({ get }) => {
-    const { preview: { currentTime }} = get(slideEditorState);
+    const { editingState, preview: { currentTime }} = get(slideEditorState);
     const slide = get(slideState(slideIndex));
+    if (editingState === EditingState.Recording) {
+      return slide.changes.slice(-1)[0]?.data || slide.originalEditorData;
+    }
     const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= currentTime;
     const latestChangeBeforeCurrentTime = slide.changes.filter(isChangeBeforeCurrentTime).slice(-1);
     // 최근 수정 사항이 없으면 첫 text로 시작함
@@ -114,7 +117,10 @@ export const editorTextDataState = selectorFamily<OutputData | undefined, number
 export const editorPreviewHighlightState = selectorFamily<EditorTextSelection[] | undefined, number>({
   key: 'editorPreviewHighlightState',
   get: slideIndex => ({ get }) => {
-    const { preview: { currentTime }} = get(slideEditorState);
+    const { editingState, preview: { currentTime }} = get(slideEditorState);
+    if (editingState !== EditingState.Previewing) {
+      return;
+    }
     const slide = get(slideState(slideIndex));
     const isChangeBeforeCurrentTime = (change: TextSelectionChange) => change.videoTimestamp <= currentTime;
     const latestChangeBeforeCurrentTime = slide.selectionChanges.filter(isChangeBeforeCurrentTime).slice(-1);

@@ -45,6 +45,12 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
   [setCurrentSlide, recordingStartedAt]
   );
 
+  const changeOriginalText = useCallback<(data: OutputData) => void>(
+    (data: OutputData) => setCurrentSlide((state) => produce(state, draftState => {
+      draftState.originalEditorData = data;
+    }))
+  , [setCurrentSlide]);
+
   // TODO: Node기반 position으로 바꾸어 responsive하게 동작하게 만들기
   const addSelectionChange = (rects?: EditorTextSelection[]) => {
     setCurrentSlide((state) =>
@@ -64,6 +70,7 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
         return;
       }
       if (editingState === EditingState.Editing) {
+        changeOriginalText(textData);
         return;
       }
       addTextChange(textData);
