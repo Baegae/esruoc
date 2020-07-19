@@ -142,6 +142,7 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, onSelectionChange, sele
       const selection = document.getSelection();
       const editorEl = editorHighlightLayerElRef.current;
       if (!selection || !editorEl) return;
+      if (selection.rangeCount === 0) return;
       const range = selection.getRangeAt(0);
       if (range.intersectsNode(editorEl)) {
         console.log('SELECTION CHANGE', selection);
