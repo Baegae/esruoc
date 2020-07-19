@@ -59,7 +59,7 @@ class CreateLectureService {
       const lessons = (lecture as Lecture).lessons;
       const result: LessonOutput[] = [];
 
-      if (lessons === undefined) {
+      if (!lessons) {
         return {lessons: result};
       }
 
