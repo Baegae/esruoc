@@ -81,18 +81,25 @@ export const UploaderProfileImage = styled.div<{url: string}>`
   margin-right: 1rem;
 `;
 
-export const LectureUploadInfoContainer = styled.div`
+export const LectureSubInfoContainer = styled.div`
+  width: 280px;
   position: relative;
   margin-top: -220px;
   left: 15px;
 `;
 
-export const LectureUploadInfoTitle = styled.p`
+export const LectureLessonCountInfoContainer = styled.div`
+  position: relative;
+  margin-top: -220px;
+  left: 15px;
+`;
+
+export const LectureSubTitle = styled.p`
   font-size: 1rem;
   color: rgba(51, 58, 61, 0.55);
 `;
 
-export const LectureUploadInfoDate = styled.p`
+export const LectureSubValue = styled.p`
   font-size: 1.375rem;
   color: black;
   font-weight: 700;

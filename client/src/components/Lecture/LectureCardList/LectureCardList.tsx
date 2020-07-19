@@ -8,10 +8,11 @@ import * as S from './styles';
 import {CompleteTag, DraftTag, ProcessingTag} from '@src/components/common/Tag/Tag';
 
 interface LectureCardListProps {
-    lectures: Lecture[];
+  isManageMode?: boolean;
+  lectures: Lecture[];
 }
 
-const LectureCardList: React.FC<LectureCardListProps> = ({ lectures }) => {
+const LectureCardList: React.FC<LectureCardListProps> = ({ lectures, isManageMode = false }) => {
   const cards: ReactNode[] = [];
 
   lectures.map((lecture) => {
@@ -22,9 +23,7 @@ const LectureCardList: React.FC<LectureCardListProps> = ({ lectures }) => {
         <S.Card>
           <S.LectureImage url={lecture.mainImageUrl!} />
           <S.TextArea>
-            { !lecture.isDraft && !lecture.isComplete && <ProcessingTag>진행중</ProcessingTag> }
-            { lecture.isComplete && <CompleteTag>완료됨</CompleteTag> }
-            { lecture.isDraft && <DraftTag>DRAFT</DraftTag> }
+            {getStatusTag(isManageMode, lecture)}
             <S.LectureCardTitle>{lecture.title}</S.LectureCardTitle>
             <S.BottomArea>
               <Row>
@@ -44,12 +43,12 @@ const LectureCardList: React.FC<LectureCardListProps> = ({ lectures }) => {
     <CardContainer>
       <Row>
         {cards}
-        <Col md={4}>
+        {isManageMode && <Col md={4}>
           <S.AddCard>
             <S.AddIcon />
             <S.AddLectureText>새로운 강의 제작하기</S.AddLectureText>
           </S.AddCard>
-        </Col>
+        </Col>}
       </Row>
     </CardContainer>
   );
@@ -57,7 +56,7 @@ const LectureCardList: React.FC<LectureCardListProps> = ({ lectures }) => {
 
 const gotoLectureInfo = (lectureId: string) => {
   Router.push({
-    pathname: `/lecture/${lectureId!}`
+    pathname: `/lecture/${lectureId!}`,
   });
 };
 
@@ -68,6 +67,26 @@ const getFormatDate = (date: Date) => {
   let day: number | string = date.getDate();
   day = day >= 10 ? day : '0' + day;
   return  year + '.' + month + '.' + day;
+};
+
+const getStatusTag = (isManageMode: boolean, lecture: Lecture): ReactNode => {
+  if (isManageMode) {
+    if (lecture.isDraft) {
+      return <DraftTag>DRAFT</DraftTag>;
+    } else {
+      if (lecture.isComplete) {
+        return <CompleteTag>완료됨</CompleteTag>;
+      }
+
+      return <ProcessingTag>진행중</ProcessingTag>;
+    }
+  } else {
+    if (lecture.isComplete) {
+      return <CompleteTag>수강완료</CompleteTag>;
+    }
+
+    return <ProcessingTag>수강중</ProcessingTag>;
+  }
 };
 
 export default LectureCardList;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Col } from 'react-grid-system';
+import {Container, Col, Row} from 'react-grid-system';
 import Lecture from '@shared/src/entity/Lecture';
 
 import * as S from './styles';
@@ -31,10 +31,18 @@ const LectureInfoHeader: React.FC<Lecture> = ({
             </S.UploaderWrapper>
           </S.InfoWrapper>
         </Col>
-        <S.LectureUploadInfoContainer>
-          <S.LectureUploadInfoTitle>강의 제작 날짜</S.LectureUploadInfoTitle>
-          <S.LectureUploadInfoDate>2020년 3월</S.LectureUploadInfoDate>
-        </S.LectureUploadInfoContainer>
+        <S.LectureSubInfoContainer>
+          <Row>
+            <Col sm={8}>
+              <S.LectureSubTitle>강의 제작 날짜</S.LectureSubTitle>
+              <S.LectureSubValue>2020년 3월</S.LectureSubValue>
+            </Col>
+            <Col sm={4}>
+              <S.LectureSubTitle>총 차시</S.LectureSubTitle>
+              <S.LectureSubValue>12 차시</S.LectureSubValue>
+            </Col>
+          </Row>
+        </S.LectureSubInfoContainer>
       </S.RelativeRow>
       <S.AbsoluteRow justify="end">
         <Col sm={8}>

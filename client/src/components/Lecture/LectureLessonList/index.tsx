@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import { useRouter } from 'next/router';
 import { Row, Col } from 'react-grid-system';
 import Lesson from '@shared/src/entity/Lesson';
 
@@ -12,6 +13,14 @@ interface LectureLessonListProps {
 }
 
 const LectureLessonList: React.FC<LectureLessonListProps> = ({ lessons }) => {
+  const router = useRouter();
+  const [isManageMode, setIsManageMode] = useState(false);
+
+  useEffect(() => {
+    const { lectureId } = router.query;
+    console.log(lectureId);
+  }, []);
+
   return (
     <S.ListContainer>
       <Row>
@@ -20,32 +29,32 @@ const LectureLessonList: React.FC<LectureLessonListProps> = ({ lessons }) => {
             차시 목록
           </S.ListTitle>
         </Col>
-        <Col md={6}>
+        {isManageMode && <Col md={6}>
           <S.AddLessonButtonContainer>
             <CTAButton>추가</CTAButton>
           </S.AddLessonButtonContainer>
-        </Col>
+        </Col>}
       </Row>
-      {lessons.map(({ id, name, description, duration }, index) => (
+      {lessons.map(({ id, title, description, duration }, index) => (
         <S.ItemWrapperRow 
-          key={id}
+          key={index}
           align="center"
         >
           <Col sm={1}>
-            <S.LessonIndex>{index}</S.LessonIndex>
+            <S.LessonIndex>{index + 1}</S.LessonIndex>
           </Col>
           <Col sm={9}>
-            <S.LessonTitle>{name}</S.LessonTitle>
+            <S.LessonTitle>{title}</S.LessonTitle>
             <S.MetaWrapper>
               <p>{description}</p>
               <p>{duration}</p>
             </S.MetaWrapper>
           </Col>
           <Col sm={2}>
-            {/*<S.PlayButton />*/}
-            <S.EditButtonContainer>
+            {!isManageMode && <S.PlayButton />}
+            {isManageMode && <S.EditButtonContainer>
               <FlatButton>수정</FlatButton>
-            </S.EditButtonContainer>
+            </S.EditButtonContainer>}
           </Col>
         </S.ItemWrapperRow>
       ))}
