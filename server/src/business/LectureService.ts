@@ -12,7 +12,7 @@ import LectureOutput from '@shared/response/LectureOutput';
 import UserRepository from '@repository/UserRepository';
 import LectureListOutput from '@shared/response/LectureListOutput';
 import LessonOutput from '@shared/response/LessonOutput';
-import LectureDetailOutput from '../../../shared/src/response/LectureDetailOutput';
+import LectureDetailOutput from '@shared/response/LectureDetailOutput';
 
 class LectureService {
     lectureRepository = new LectureRepository();
