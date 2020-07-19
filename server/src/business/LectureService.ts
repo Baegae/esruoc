@@ -11,8 +11,8 @@ import Lecture from '@shared/entity/Lecture';
 import LectureOutput from '@shared/response/LectureOutput';
 import UserRepository from '@repository/UserRepository';
 import LectureListOutput from '@shared/response/LectureListOutput';
-import LessonListOutput from '@shared/response/LessonListOutput';
 import LessonOutput from '@shared/response/LessonOutput';
+import LectureDetailOutput from '../../../shared/src/response/LectureDetailOutput';
 
 class LectureService {
     lectureRepository = new LectureRepository();
@@ -68,13 +68,26 @@ class LectureService {
       };
     }
 
-    async getLessons(lectureId: string): Promise<LessonListOutput> {
+    async getLessons(lectureId: string): Promise<LectureDetailOutput> {
       const lecture = await this.lectureRepository.getLecture({'_id': new Types.ObjectId(lectureId)});
       const lessons = (lecture as Lecture).lessons;
       const result: LessonOutput[] = [];
 
       if (!lessons) {
-        return {lessons: result};
+        const output = await this.mapLectureOutput(lecture);
+        return {
+          id: output.id,
+          title: output.title,
+          description: output.description,
+          isDraft: output.isDraft,
+          isComplete: output.isComplete,
+          mainImageUrl: output.mainImageUrl,
+          uploadedAt: output.uploadedAt,
+          lessonCount: output.lessonCount,
+          isTaking: output.isTaking,
+          uploader: output.uploader,
+          lessons: result
+        };
       }
 
       for (const lesson of lessons) {
@@ -88,7 +101,20 @@ class LectureService {
           uploadedAt: lesson.uploadedAt
         });
       }
-      return {lessons: result};
+      const output = await this.mapLectureOutput(lecture);
+      return {
+        id: output.id,
+        title: output.title,
+        description: output.description,
+        isDraft: output.isDraft,
+        isComplete: output.isComplete,
+        mainImageUrl: output.mainImageUrl,
+        uploadedAt: output.uploadedAt,
+        lessonCount: output.lessonCount,
+        isTaking: output.isTaking,
+        uploader: output.uploader,
+        lessons: result
+      };
     }
 
     async createLesson(lectureId: string, videoFile: any, lesson: Lesson): Promise<CreateLessonResponse> {
