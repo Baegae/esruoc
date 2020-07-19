@@ -81,7 +81,7 @@ const Slide: React.FC<SlideProps> = ({ slideIndex, selected, onFocused }) => {
 
   return (
     <S.CardView
-      isSelected={selected}
+      isSelected={selected || false}
       onFocus={handleFocused}
     >
       <Editor
