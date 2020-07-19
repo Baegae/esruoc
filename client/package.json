@@ -12,6 +12,9 @@
     "postinstall": "link-module-alias",
     "preinstall": "command -v link-module-alias && link-module-alias clean || true"
   },
+  "_moduleAliases": {
+    "@shared": "../shared/src"
+  },
   "dependencies": {
     "@editorjs/editorjs": "^2.18.0",
     "@editorjs/header": "^2.5.0",
