@@ -1,4 +1,4 @@
-import { OutputData } from '@editorjs/editorjs';
+  import { OutputData } from '@editorjs/editorjs';
 import { EditorTextSelection } from '../Editor';
 import { selectorFamily, atom, DefaultValue } from 'recoil';
 import { produce } from 'immer';
@@ -91,23 +91,17 @@ export const slideState = selectorFamily<SlideState, number>({
 export const latestTextChangeState = selectorFamily<OutputData, number>({
   key: 'latestTextChangeState',
   get: slideIndex => ({ get }) => {
-    const videoEdit = get(slideState(slideIndex));
-    const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= videoEdit.previewCurrentTime;
-    const latestChangeBeforeCurrentTime = videoEdit.changes.filter(isChangeBeforeCurrentTime).slice(-1);
+    const slide = get(slideState(slideIndex));
+    const isChangeBeforeCurrentTime = (textChange: TextDataChange) => textChange.videoTimestamp <= slide.previewCurrentTime;
+    const latestChangeBeforeCurrentTime = slide.changes.filter(isChangeBeforeCurrentTime).slice(-1);
     // 최근 수정 사항이 없으면 첫 text로 시작함
-    return (latestChangeBeforeCurrentTime.length > 0 ? latestChangeBeforeCurrentTime[0].data : videoEdit.originalEditorData);
+    return (latestChangeBeforeCurrentTime.length > 0 ? latestChangeBeforeCurrentTime[0].data : slide.originalEditorData);
   },
 });
 
 export const editorTextDataState = selectorFamily<OutputData | undefined, number>({
   key: 'editorTextDataState',
   get: slideIndex => ({ get }) => {
-    const videoEdit = get(slideState(slideIndex));
-    // NO CONTROL WHEN ENABLED WRITING
-    if (videoEdit.isRecording) {
-      return;
-    }
-    // CONTROL
     return get(latestTextChangeState(slideIndex));
   },
 });
@@ -115,14 +109,9 @@ export const editorTextDataState = selectorFamily<OutputData | undefined, number
 export const editorPreviewHighlightState = selectorFamily<EditorTextSelection[] | undefined, number>({
   key: 'editorPreviewHighlightState',
   get: slideIndex => ({ get }) => {
-    const videoEdit = get(slideState(slideIndex));
-    // NO CONTROL WHEN ENABLED WRITING
-    if (videoEdit.isRecording) {
-      return;
-    }
-
-    const isChangeBeforeCurrentTime = (change: TextSelectionChange) => change.videoTimestamp <= videoEdit.previewCurrentTime;
-    const latestChangeBeforeCurrentTime = videoEdit.selectionChanges.filter(isChangeBeforeCurrentTime).slice(-1);
+    const slide = get(slideState(slideIndex));
+    const isChangeBeforeCurrentTime = (change: TextSelectionChange) => change.videoTimestamp <= slide.previewCurrentTime;
+    const latestChangeBeforeCurrentTime = slide.selectionChanges.filter(isChangeBeforeCurrentTime).slice(-1);
     return (latestChangeBeforeCurrentTime.length > 0 ? latestChangeBeforeCurrentTime[0].data : undefined);
   },
 });
