@@ -46,3 +46,15 @@ export const PlayButton = styled(PlayButtonSvg)`
   width: 4rem;
   height: auto;
 `;
+
+export const AddLessonButtonContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin-bottom: 5px;
+`;
+
+export const EditButtonContainer = styled.div`
+  right: 0;
+  float: right;
+`;

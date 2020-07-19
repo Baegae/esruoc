@@ -2,7 +2,10 @@ import React from 'react';
 import { Row, Col } from 'react-grid-system';
 import Lesson from '@shared/src/entity/Lesson';
 
+import CTAButton from '@src/components/common/CTAButton';
+
 import * as S from './styles';
+import FlatButton from '@src/components/common/FlatButton';
 
 interface LectureLessonListProps {
   lessons: Lesson[];
@@ -12,10 +15,15 @@ const LectureLessonList: React.FC<LectureLessonListProps> = ({ lessons }) => {
   return (
     <S.ListContainer>
       <Row>
-        <Col>
+        <Col md={6}>
           <S.ListTitle>
             차시 목록
           </S.ListTitle>
+        </Col>
+        <Col md={6}>
+          <S.AddLessonButtonContainer>
+            <CTAButton>추가</CTAButton>
+          </S.AddLessonButtonContainer>
         </Col>
       </Row>
       {lessons.map(({ id, name, description, duration }, index) => (
@@ -34,7 +42,10 @@ const LectureLessonList: React.FC<LectureLessonListProps> = ({ lessons }) => {
             </S.MetaWrapper>
           </Col>
           <Col sm={2}>
-            <S.PlayButton />
+            {/*<S.PlayButton />*/}
+            <S.EditButtonContainer>
+              <FlatButton>수정</FlatButton>
+            </S.EditButtonContainer>
           </Col>
         </S.ItemWrapperRow>
       ))}

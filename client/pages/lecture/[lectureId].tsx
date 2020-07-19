@@ -5,6 +5,8 @@ import LectureInfoHeader from '@src/components/Lecture/LectureInfoHeader';
 import Lecture from '@shared/src/entity/Lecture';
 import LectureLessonList from '@src/components/Lecture/LectureLessonList';
 
+import { withRouter } from 'next/router';
+
 const LectureDetailPage = () => {
   // TODO: 서버로 부터 강의 정보를 불러와야함
   // const router = useRouter();
@@ -162,4 +164,4 @@ const LectureDetailPage = () => {
   );
 };
 
-export default LectureDetailPage;
+export default withRouter(LectureDetailPage);
