@@ -14,7 +14,7 @@ import LectureListOutput from '@shared/response/LectureListOutput';
 import LessonListOutput from '@shared/response/LessonListOutput';
 import LessonOutput from '@shared/response/LessonOutput';
 
-class CreateLectureService {
+class LectureService {
     lectureRepository = new LectureRepository();
     userRepository = new UserRepository();
 
@@ -123,4 +123,4 @@ class CreateLectureService {
     }
 }
 
-export default CreateLectureService;
+export default LectureService;
