@@ -43,23 +43,23 @@ const VideoEdit: React.FC = () => {
   }, []);
 
   const setCurrentSlideIndex = (index: number) => {
-    setSlideEditor({ ...slideEditor, currentSlideIndex: index });
+    setSlideEditor((slideEditor) => ({ ...slideEditor, currentSlideIndex: index }));
   };
 
   // Actions for state
   const discardRecording = () => {
-    setSlideEditor({ ...slideEditor, editingState: EditingState.Editing });
+    setSlideEditor((slideEditor) => ({
+      ...slideEditor, editingState: EditingState.Editing, preview: {
+        videoObjectUrl: '',
+        currentTime: 0
+      }
+    }));
+    // TODO: 전부 지우기
     setCurrentSlide((state) => ({
       ...state,
       changes: [],
       selectionChanges: [],
-      previewVideoObjectUrl: undefined,
-      previewCurrentTime: 0,
     }));
-  };
-
-  const setIsRecording = (isRecording: boolean) => {
-    setCurrentSlide((videoEdit) => ({ ...videoEdit, isRecording }));
   };
 
   const startRecording = () => {
@@ -68,10 +68,8 @@ const VideoEdit: React.FC = () => {
     }
     discardRecording();
     setSlideEditor({ ...slideEditor, editingState: EditingState.Recording });
-    setIsRecording(true);
-    setCurrentSlide((state) => ({
-      ...state,
-      recordingStartedAt: new Date().getTime(),
+    setSlideEditor((state) => produce(state, draftState => {
+      draftState.recordingStartedAt = new Date().getTime();
     }));
     recorder.startRecording();
   };
@@ -81,7 +79,6 @@ const VideoEdit: React.FC = () => {
       console.log(recorder.toURL());
       setPreviewUrl(recorder.toURL());
       setSlideEditor((slideEditor) => ({ ...slideEditor, editingState: EditingState.Previewing }));
-      setIsRecording(false);
       // uploadVideoToServer(recorder.getBlob()).then(() => {
       //   alert('upload ok!');
       // });
@@ -117,14 +114,15 @@ const VideoEdit: React.FC = () => {
   };
 
   const setPreviewUrl = (url: string) => {
-    setCurrentSlide((videoEdit) => ({
-      ...videoEdit,
-      previewVideoObjectUrl: url,
+    setSlideEditor((state) => produce(state, draftState => {
+      draftState.preview.videoObjectUrl = url;
     }));
   };
 
   const setPreviewCurrentTime = (currentTime: number) => {
-    setCurrentSlide((state) => ({ ...state, previewCurrentTime: currentTime }));
+    setSlideEditor((state) => produce(state, draftState => {
+      draftState.preview.currentTime = currentTime;
+    }));
   };
 
   const handlePreviewTimeUpdate: ChangeEventHandler<HTMLVideoElement> = (
@@ -164,12 +162,12 @@ const VideoEdit: React.FC = () => {
               onPressStop={handlePressStop}
             />
             {slideEditor.editingState === EditingState.Previewing && <button onClick={discardRecording}>discard</button>}
-            {currentSlide.previewVideoObjectUrl && (
+            {slideEditor.preview.videoObjectUrl && (
               <div>
                 <h2>[DEBUG] Record Preview</h2>
                 <S.CameraVideo
                   onTimeUpdate={handlePreviewTimeUpdate}
-                  src={currentSlide.previewVideoObjectUrl}
+                  src={slideEditor.preview.videoObjectUrl}
                   controls
                   width="250"
                 />
