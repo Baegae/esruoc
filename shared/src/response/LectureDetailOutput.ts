@@ -12,6 +12,7 @@ interface LectureDetailOutput {
   lessonCount: number,
   isTaking: boolean,
   uploader: UserOutput,
+  uploadedByMe: boolean,
   lessons: LessonOutput[]
 }
 
