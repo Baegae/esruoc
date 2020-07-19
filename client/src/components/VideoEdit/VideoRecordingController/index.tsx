@@ -31,7 +31,7 @@ const VideoRecordingController: React.FC<VideoRecordingControllerProps> = ({
       )}
       {!!onPressRecording && (
         <S.IconButton onClick={onPressRecording}>
-          <S.StopRecordingIcon />
+          <S.StartRecordingIcon />
         </S.IconButton>
       )}
       <S.IconButton 

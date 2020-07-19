@@ -4,7 +4,7 @@ import { RecoilRoot, useRecoilState } from 'recoil';
 import produce from 'immer';
 
 import { getCameraMirrorRefCallback } from './utils';
-import { slideEditorState, createNewSlideData, slideState } from './states';
+import { slideEditorState, createNewSlideData, slideState, EditingState } from './states';
 
 import * as S from './styles';
 import Slide from './Slide';
@@ -25,7 +25,10 @@ const VideoEdit: React.FC = () => {
 
   // a state observer for debugging
   useEffect(() => {
-    console.log('ATOM', currentSlide);
+    console.log('[recoil] slideEditor', slideEditor);
+  }, [slideEditor]);
+  useEffect(() => {
+    console.log('[recoil] currentSlide', currentSlide);
   }, [currentSlide]);
 
   useEffect(() => {
@@ -43,18 +46,41 @@ const VideoEdit: React.FC = () => {
     setSlideEditor({ ...slideEditor, currentSlideIndex: index });
   };
 
+  // Actions for state
+  const discardRecording = () => {
+    setSlideEditor({ ...slideEditor, editingState: EditingState.Editing });
+    setCurrentSlide((state) => ({
+      ...state,
+      changes: [],
+      selectionChanges: [],
+      previewVideoObjectUrl: undefined,
+      previewCurrentTime: 0,
+    }));
+  };
+
+  const setIsRecording = (isRecording: boolean) => {
+    setCurrentSlide((videoEdit) => ({ ...videoEdit, isRecording }));
+  };
+
   const startRecording = () => {
-    if (currentSlide.isRecording) {
+    if (slideEditor.editingState === EditingState.Recording) {
       return;
     }
+    discardRecording();
+    setSlideEditor({ ...slideEditor, editingState: EditingState.Recording });
     setIsRecording(true);
-    resetAndStartRecording();
+    setCurrentSlide((state) => ({
+      ...state,
+      recordingStartedAt: new Date().getTime(),
+    }));
     recorder.startRecording();
   };
 
   const stopRecording = () => {
     recorder.stopRecording(() => {
+      console.log(recorder.toURL());
       setPreviewUrl(recorder.toURL());
+      setSlideEditor((slideEditor) => ({ ...slideEditor, editingState: EditingState.Previewing }));
       setIsRecording(false);
       // uploadVideoToServer(recorder.getBlob()).then(() => {
       //   alert('upload ok!');
@@ -75,11 +101,11 @@ const VideoEdit: React.FC = () => {
 
   const handlePressRecording:
     | React.MouseEventHandler
-    | undefined = currentSlide.isRecording ? undefined : startRecording;
+    | undefined = slideEditor.editingState === EditingState.Editing ? startRecording : undefined;
 
   const handlePressStop:
     | React.MouseEventHandler
-    | undefined = !currentSlide.isRecording ? undefined : stopRecording;
+    | undefined = slideEditor.editingState === EditingState.Recording ? stopRecording : undefined;
 
   const addNewSlide = () => {
     setSlideEditor((state) =>
@@ -88,22 +114,6 @@ const VideoEdit: React.FC = () => {
         draftState.currentSlideIndex = draftState.slides.length - 1;
       })
     );
-  };
-
-  // Actions for state
-  const resetAndStartRecording = () => {
-    setCurrentSlide((state) => ({
-      ...state,
-      changes: [],
-      selectionChanges: [],
-      recordingStartedAt: new Date().getTime(),
-      previewVideoObjectUrl: undefined,
-      previewCurrentTime: 0,
-    }));
-  };
-
-  const setIsRecording = (isRecording: boolean) => {
-    setCurrentSlide((videoEdit) => ({ ...videoEdit, isRecording }));
   };
 
   const setPreviewUrl = (url: string) => {
@@ -153,6 +163,7 @@ const VideoEdit: React.FC = () => {
               onPressRecording={handlePressRecording}
               onPressStop={handlePressStop}
             />
+            {slideEditor.editingState === EditingState.Previewing && <button onClick={discardRecording}>discard</button>}
             {currentSlide.previewVideoObjectUrl && (
               <div>
                 <h2>[DEBUG] Record Preview</h2>
