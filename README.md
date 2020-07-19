@@ -1,5 +1,5 @@
-# EMOC
-<b>E</b>asy to <b>M</b>ake <b>O</b>wn <b>C</b>ourse
+# ESRUOC
+기존의 <b>Course</b>를 뒤집을 수 있는, 새로운 콘텐츠 플랫폼 <b>Esruoc</b>
 
 <br>
 
@@ -29,10 +29,18 @@ $ yarn workspace shared|client|server add library-name # 뒤부터는 yarn add �
 
 ## 클라이언트 프로젝트 실행하는 방법
 
-입력 바람
+```bash
+cd client
+yarn dev
+```
 
 <br>
 
 ## 백엔드 프로젝트 실행하는 방법
 
-입력 바람
+프로젝트를 실행하기 위해서는 credential 파일과 환경변수가 필요합니다.
+
+```bash
+docker-compose -f ./docker-compose-local.yaml up
+```
+
